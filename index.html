@@ -28030,13 +28030,29 @@
     // SISTEMA DE SINCRONIZAÇÃO EM NUVEM (GOOGLE FIREBASE REALTIME DATABASE)
     // =========================================================================
     const STORAGE_CLOUD_CONFIG_KEY = 'obra_natura_firebase_cloud_v1';
+    const DEFAULT_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAQg0QpN-mHSs4ilrVAFnJdJaJYMaFnQcw",
+      authDomain: "gerenciador-de-obra-98bf2.firebaseapp.com",
+      databaseURL: "https://gerenciador-de-obra-98bf2-default-rtdb.firebaseio.com",
+      projectId: "gerenciador-de-obra-98bf2",
+      storageBucket: "gerenciador-de-obra-98bf2.firebasestorage.app",
+      messagingSenderId: "704459138224",
+      appId: "1:704459138224:web:1caa342f23662d178fc775"
+    };
     let isCloudSyncActive = false;
     let cloudDbRef = null;
     let isApplyingCloudUpdate = false;
 
     function initCloudSync() {
+      let config = null;
       const savedCfg = localStorage.getItem(STORAGE_CLOUD_CONFIG_KEY);
-      if (!savedCfg) {
+      if (savedCfg) {
+        try { config = JSON.parse(savedCfg); } catch(e){}
+      }
+      if (!config || !config.databaseURL) {
+        config = DEFAULT_FIREBASE_CONFIG;
+      }
+      if (!config || !config.databaseURL) {
         updateCloudStatusUI(false);
         return;
       }
