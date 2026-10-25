@@ -1523,30 +1523,39 @@
     <div class="card-bg border rounded-2xl p-4 shadow-sm bg-gradient-to-r from-sky-500/10 via-indigo-500/5 to-emerald-500/10 border-sky-500/30 space-y-3">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex flex-col items-center justify-center font-black shadow-md">
+          <div id="exec-week-badge-box" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex flex-col items-center justify-center font-black shadow-md">
             <span class="text-xs leading-none opacity-80">SEM.</span>
-            <span class="text-lg leading-none">04</span>
+            <span id="exec-week-badge-num" class="text-lg leading-none">04</span>
           </div>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-black text-sm text-slate-800 dark:text-slate-100">Painel Executivo de Acompanhamento — Semana 4 (19/10/2026)</h3>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs animate-pulse">Semana Vigente</span>
+              <h3 id="exec-panel-title" class="font-black text-sm text-slate-800 dark:text-slate-100">Cronograma Semanal — Acompanhamento dos Dias da Semana (Seg a Dom)</h3>
+              <span id="exec-panel-today-badge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs animate-pulse">Hoje: Domingo</span>
             </div>
-            <p class="text-xs opacity-75 mt-0.5">
-              Obra Natura Ecoparque • Previsão Entrega Resíduos/DML: <strong>13/11/2026 (Semana 7)</strong> • Entrega Metálica: <strong>10/12/2026 (Semana 11)</strong>
+            <p id="exec-panel-subtitle" class="text-xs opacity-75 mt-0.5">
+              Semana Vigente: <strong>19/10 a 25/10/2026</strong> • Alvenarias & Sapatas • Entrega Resíduos: <strong>13/11 (S7)</strong> • Metálica: <strong>10/12 (S11)</strong>
             </p>
           </div>
         </div>
 
+        <!-- Controles Rápidos da Semana (Seg a Dom) -->
         <div class="flex items-center gap-2 flex-wrap">
-          <div class="flex items-center gap-2 bg-white/90 dark:bg-slate-800/90 px-3 py-1.5 rounded-xl border border-sky-400/30 shadow-xs text-xs">
-            <span class="flex items-center gap-1.5 font-black text-sky-700 dark:text-sky-300">
-              <span>📊</span> Cronograma Gantt Semanal Dinâmico (11 Semanas)
-            </span>
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Cronograma Ativo"></span>
+          <div class="flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 px-3 py-1.5 rounded-xl border border-sky-400/40 shadow-xs">
+            <button onclick="changeActiveWeek(-1)" class="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-300 transition cursor-pointer font-black text-xs" title="Semana Anterior">
+              ◀
+            </button>
+            <select id="quick-week-selector" onchange="onWeekSelectChange(this.value)" class="bg-transparent text-xs font-black text-sky-700 dark:text-sky-300 outline-none cursor-pointer">
+              <!-- Options populated dynamically -->
+            </select>
+            <button onclick="changeActiveWeek(1)" class="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-300 transition cursor-pointer font-black text-xs" title="Próxima Semana">
+              ▶
+            </button>
+            <button onclick="goToCurrentWeek()" class="ml-1 px-2 py-0.5 bg-rose-500 hover:bg-rose-600 text-white rounded text-[10px] font-black shadow-2xs transition cursor-pointer flex items-center gap-1" title="Ir para a Semana Atual / Hoje">
+              <span>📍</span> Hoje
+            </button>
           </div>
 
-          <button onclick="autoSyncAllScheduleDays()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5" title="Recalcula e sincroniza automaticamente a contagem de dias úteis e corridos de todas as etapas">
+          <button onclick="autoSyncAllScheduleDays()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer" title="Recalcula e sincroniza automaticamente a contagem de dias úteis e corridos de todas as etapas">
             <span>⚡</span> Sincronizar Dias Automáticos
           </button>
         </div>
@@ -1615,7 +1624,7 @@
               <th rowspan="2" class="border table-cell-border p-2 w-14 uppercase text-[10px]">
                 Etapa<br><span class="opacity-70 font-normal">(Escopo)</span>
               </th>
-              <th rowspan="2" class="border table-cell-border p-2 min-w-[240px] uppercase text-[10px] text-left">
+              <th rowspan="2" class="border table-cell-border p-2 min-w-[220px] uppercase text-[10px] text-left">
                 Etapa &amp; Responsável
               </th>
               <th rowspan="2" class="border table-cell-border p-2 w-28 uppercase text-[10px]">
@@ -1628,17 +1637,19 @@
                 ⏱️ Prazo<br><span class="opacity-70 font-normal">Saldo / Atraso</span>
               </th>
               
-              <!-- Cabeçalho Principal do Gantt Semanal -->
-              <th class="border table-cell-border py-1.5 uppercase text-xs tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-300 min-w-[550px]">
+              <!-- Cabeçalho dos 7 Dias da Semana -->
+              <th colspan="7" class="border table-cell-border py-1 uppercase text-xs tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-300">
                 <div class="flex items-center justify-between px-3 py-0.5 flex-wrap gap-2">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-black">📊 CRONOGRAMA GANTT SEMANAL DINÂMICO (11 SEMANAS)</span>
-                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-500 text-white shadow-xs animate-pulse flex items-center gap-1">
-                      <span>📍</span> SEMANA 4 VIGENTE (HOJE)
+                    <span class="text-xs font-black">📅 ACOMPANHAMENTO SEMANAL POR DIAS DA SEMANA</span>
+                    <span id="header-week-title" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-600 text-white shadow-2xs">
+                      Semana 4 (19/10 a 25/10/2026)
                     </span>
                   </div>
-                  <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                    28/09/2026 a 13/12/2026
+                  <div class="flex items-center gap-1.5">
+                    <button onclick="changeActiveWeek(-1)" class="px-2 py-0.5 bg-white/70 dark:bg-slate-700 hover:bg-white text-sky-800 dark:text-sky-200 rounded text-[10.5px] font-bold shadow-2xs transition cursor-pointer" title="Semana Anterior">◀ Anterior</button>
+                    <button onclick="goToCurrentWeek()" class="px-2 py-0.5 bg-rose-500 hover:bg-rose-600 text-white rounded text-[10.5px] font-black shadow-2xs transition cursor-pointer" title="Semana Atual de Hoje">📍 Semana Atual</button>
+                    <button onclick="changeActiveWeek(1)" class="px-2 py-0.5 bg-white/70 dark:bg-slate-700 hover:bg-white text-sky-800 dark:text-sky-200 rounded text-[10.5px] font-bold shadow-2xs transition cursor-pointer" title="Próxima Semana">Próxima ▶</button>
                   </div>
                 </div>
               </th>
@@ -1646,68 +1657,9 @@
               <th rowspan="2" class="border table-cell-border p-1 w-10 no-print text-[10px]">Ação</th>
             </tr>
 
-            <!-- Sublinha: As 11 Semanas Dinâmicas Alinhadas em Grid -->
+            <!-- Sublinha: Os 7 Dias da Semana (Seg a Dom) renderizados dinamicamente -->
             <tr class="table-header-sub border-b text-center font-bold text-[10px]" id="days-header-row">
-              <th class="border table-cell-border p-0 bg-slate-50 dark:bg-slate-900/60 min-w-[550px]">
-                <div class="grid grid-cols-11 text-center py-1">
-                  <!-- S1 -->
-                  <div class="border-r table-cell-border px-0.5" title="Semana 1: 28/09 a 04/10 (Mobilização & Insumos)">
-                    <span class="block font-black text-[11px] text-slate-700 dark:text-slate-200">S1</span>
-                    <span class="block text-[8.5px] opacity-75">28/09</span>
-                  </div>
-                  <!-- S2 -->
-                  <div class="border-r table-cell-border px-0.5" title="Semana 2: 05/10 a 11/10 (Fundações Resíduos/DML & Locação ADM)">
-                    <span class="block font-black text-[11px] text-slate-700 dark:text-slate-200">S2</span>
-                    <span class="block text-[8.5px] opacity-75">05/10</span>
-                  </div>
-                  <!-- S3 -->
-                  <div class="border-r table-cell-border px-0.5" title="Semana 3: 12/10 a 18/10 (Piso Concreto & Escavação Sapatas ADM)">
-                    <span class="block font-black text-[11px] text-slate-700 dark:text-slate-200">S3</span>
-                    <span class="block text-[8.5px] opacity-75">12/10</span>
-                  </div>
-                  <!-- S4 - HOJE -->
-                  <div class="border-r-2 border-rose-400 bg-rose-500/15 text-rose-700 dark:text-rose-300 font-extrabold px-0.5" title="Semana 4 Atual: 19/10 a 25/10 (HOJE: Alvenarias & 28/33 Sapatas)">
-                    <span class="block font-black text-[11px] flex items-center justify-center gap-0.5">S4 📍</span>
-                    <span class="block text-[8.5px] font-bold">19/10</span>
-                    <span class="inline-block text-[7.5px] bg-rose-500 text-white rounded-xs px-1 leading-tight uppercase font-black">HOJE</span>
-                  </div>
-                  <!-- S5 -->
-                  <div class="border-r table-cell-border px-0.5" title="Semana 5: 26/10 a 01/11 (Montagem Metálica Resíduos & Concretagem ADM)">
-                    <span class="block font-black text-[11px] text-slate-700 dark:text-slate-200">S5</span>
-                    <span class="block text-[8.5px] opacity-75">26/10</span>
-                  </div>
-                  <!-- S6 -->
-                  <div class="border-r table-cell-border px-0.5" title="Semana 6: 02/11 a 08/11 (Instalações, Forro & Metálica ADM)">
-                    <span class="block font-black text-[11px] text-slate-700 dark:text-slate-200">S6</span>
-                    <span class="block text-[8.5px] opacity-75">02/11</span>
-                  </div>
-                  <!-- S7 - Entrega Resíduos -->
-                  <div class="border-r table-cell-border px-0.5 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300" title="Semana 7: 09/11 a 15/11 (Entrega Final Resíduos/DML em 13/11)">
-                    <span class="block font-black text-[11px]">S7 🏁</span>
-                    <span class="block text-[8.5px]">09/11</span>
-                  </div>
-                  <!-- S8 -->
-                  <div class="border-r table-cell-border px-0.5" title="Semana 8: 16/11 a 22/11 (Montagem Metálica Passarela & Brises)">
-                    <span class="block font-black text-[11px] text-slate-700 dark:text-slate-200">S8</span>
-                    <span class="block text-[8.5px] opacity-75">16/11</span>
-                  </div>
-                  <!-- S9 -->
-                  <div class="border-r table-cell-border px-0.5" title="Semana 9: 23/11 a 29/11 (Pintura & Acabamentos Finais Resíduos)">
-                    <span class="block font-black text-[11px] text-slate-700 dark:text-slate-200">S9</span>
-                    <span class="block text-[8.5px] opacity-75">23/11</span>
-                  </div>
-                  <!-- S10 -->
-                  <div class="border-r table-cell-border px-0.5" title="Semana 10: 30/11 a 06/12 (Instalação de Telhas & Fechamentos ADM)">
-                    <span class="block font-black text-[11px] text-slate-700 dark:text-slate-200">S10</span>
-                    <span class="block text-[8.5px] opacity-75">30/11</span>
-                  </div>
-                  <!-- S11 - Entrega Metálica -->
-                  <div class="px-0.5 bg-sky-500/10 text-sky-800 dark:text-sky-300 font-bold" title="Semana 11: 07/12 a 13/12 (Conclusão e Entrega Estrutura Metálica em 10/12)">
-                    <span class="block font-black text-[11px]">S11 🏁</span>
-                    <span class="block text-[8.5px]">07/12</span>
-                  </div>
-                </div>
-              </th>
+              <!-- Renderizado via renderDaysHeader() -->
             </tr>
           </thead>
           <tbody id="sheet-body" class="divide-y table-cell-border">
@@ -19398,6 +19350,7 @@
       // A sincronização automática ainda ocorre ao trocar de mês (onMonthUpdated).
 
       applyConfigToHeader();
+      updateExecutiveWeekUI();
       renderDaysHeader();
       renderSheetBody();
       updateKPIs();
@@ -23514,38 +23467,171 @@
       }
     }
 
+    
+    // =========================================================================
+    // CONTROLE DINÂMICO DO CRONOGRAMA SEMANAL (7 DIAS DA SEMANA: SEG A DOM)
+    // =========================================================================
+    const WEEKDAY_NAMES_PT = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+    const WEEKDAY_SHORT_PT = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+    function getCurrentWeekIndex() {
+      const today = new Date();
+      const tTime = today.getTime();
+      for (let i = 0; i < OBRA_SEMANAS.length; i++) {
+        const w = OBRA_SEMANAS[i];
+        const wStart = new Date(w.start.getFullYear(), w.start.getMonth(), w.start.getDate(), 0, 0, 0);
+        const wEnd = new Date(w.end.getFullYear(), w.end.getMonth(), w.end.getDate(), 23, 59, 59);
+        if (tTime >= wStart.getTime() && tTime <= wEnd.getTime()) {
+          return i;
+        }
+      }
+      if (tTime < OBRA_SEMANAS[0].start.getTime()) return 0;
+      if (tTime > OBRA_SEMANAS[OBRA_SEMANAS.length - 1].end.getTime()) return OBRA_SEMANAS.length - 1;
+      return 3; // Padrão S4
+    }
+
+    let activeWeekIndex = getCurrentWeekIndex();
+
+    function getActiveWeekDays(weekIdx) {
+      if (weekIdx === undefined || weekIdx === null) weekIdx = activeWeekIndex;
+      const w = OBRA_SEMANAS[weekIdx] || OBRA_SEMANAS[3];
+      const today = new Date();
+      const days = [];
+
+      for (let i = 0; i < 7; i++) {
+        const dt = new Date(w.start.getFullYear(), w.start.getMonth(), w.start.getDate() + i);
+        const isToday = (today.getFullYear() === dt.getFullYear() && today.getMonth() === dt.getMonth() && today.getDate() === dt.getDate());
+        const isWeekend = (i === 5 || i === 6);
+        const dayNum = dt.getDate();
+        const monthNum = dt.getMonth() + 1;
+        const yearNum = dt.getFullYear();
+        const dayKey = `d_${yearNum}_${String(monthNum).padStart(2,'0')}_${String(dayNum).padStart(2,'0')}`;
+
+        days.push({
+          weekday: WEEKDAY_SHORT_PT[i],
+          weekdayFull: WEEKDAY_NAMES_PT[i],
+          dayNum: dayNum,
+          monthNum: monthNum,
+          dateFormatted: `${String(dayNum).padStart(2,'0')}/${String(monthNum).padStart(2,'0')}`,
+          fullDateStr: `${String(dayNum).padStart(2,'0')}/${String(monthNum).padStart(2,'0')}/${yearNum}`,
+          dateObj: dt,
+          isToday: isToday,
+          isWeekend: isWeekend,
+          dayKey: dayKey
+        });
+      }
+      return days;
+    }
+
+    function changeActiveWeek(delta) {
+      activeWeekIndex = Math.max(0, Math.min(OBRA_SEMANAS.length - 1, activeWeekIndex + delta));
+      updateExecutiveWeekUI();
+      renderDaysHeader();
+      renderSheetBody();
+    }
+
+    function onWeekSelectChange(val) {
+      activeWeekIndex = parseInt(val, 10);
+      updateExecutiveWeekUI();
+      renderDaysHeader();
+      renderSheetBody();
+    }
+
+    function goToCurrentWeek() {
+      activeWeekIndex = getCurrentWeekIndex();
+      updateExecutiveWeekUI();
+      renderDaysHeader();
+      renderSheetBody();
+    }
+
+    function updateExecutiveWeekUI() {
+      const w = OBRA_SEMANAS[activeWeekIndex];
+      if (!w) return;
+
+      const numEl = document.getElementById('exec-week-badge-num');
+      if (numEl) numEl.innerText = String(w.num).padStart(2, '0');
+
+      const titleEl = document.getElementById('header-week-title');
+      if (titleEl) titleEl.innerText = `${w.label} (${w.dates}/2026)`;
+
+      const subTitleEl = document.getElementById('exec-panel-subtitle');
+      if (subTitleEl) {
+        subTitleEl.innerHTML = `Semana Ativa: <strong>${w.label} (${w.dates}/2026)</strong> • ${escapeHtml(w.desc)} • Previsão Resíduos: <strong>13/11 (S7)</strong> • Metálica: <strong>10/12 (S11)</strong>`;
+      }
+
+      const todayBadge = document.getElementById('exec-panel-today-badge');
+      if (todayBadge) {
+        const today = new Date();
+        const wdIdx = (today.getDay() + 6) % 7; // 0=Seg, 6=Dom
+        const wdName = WEEKDAY_NAMES_PT[wdIdx] || 'Hoje';
+        const isCurrentActive = (activeWeekIndex === getCurrentWeekIndex());
+        todayBadge.innerText = isCurrentActive ? `Hoje: ${wdName} (Semana Atual 📍)` : `Visualizando ${w.label}`;
+        todayBadge.className = isCurrentActive 
+          ? "px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs animate-pulse" 
+          : "px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-600 text-white shadow-xs";
+      }
+
+      // Popular o selector
+      const selector = document.getElementById('quick-week-selector');
+      if (selector) {
+        selector.innerHTML = OBRA_SEMANAS.map((item, idx) => {
+          const isCur = (idx === getCurrentWeekIndex());
+          return `<option value="${idx}" ${idx === activeWeekIndex ? 'selected' : ''}>${item.label} (${item.dates}) ${isCur ? '• HOJE 📍' : ''}</option>`;
+        }).join('');
+      }
+    }
+
+    function cycleWeeklyDayStatus(sIdx, tIdx, dayKey, dayNum) {
+      if (!projectData[sIdx] || !projectData[sIdx].tasks[tIdx]) return;
+      const task = projectData[sIdx].tasks[tIdx];
+      if (!task.days) task.days = {};
+
+      const current = task.days[dayKey] || task.days['d' + dayNum] || 'empty';
+      let next = 'yellow';
+      if (current === 'yellow') next = 'green';
+      else if (current === 'green') next = 'empty';
+
+      if (next === 'empty') {
+        delete task.days[dayKey];
+        delete task.days['d' + dayNum];
+      } else {
+        task.days[dayKey] = next;
+        task.days['d' + dayNum] = next;
+      }
+
+      if (autoCalcProgress && typeof recalculateTaskProgressFromDays === 'function') {
+        task.progress = recalculateTaskProgressFromDays(task);
+      }
+
+      saveData();
+      renderSheetBody();
+      updateKPIs();
+      renderDashboard();
+    }
+
     function renderDaysHeader() {
       const tr = document.getElementById('days-header-row');
       if (!tr) return;
 
-      if (cronogramaTimelineMode === 'semanal') {
-        tr.innerHTML = OBRA_SEMANAS.map(w => {
-          const isCurrent = w.isCurrent;
-          const bgCls = isCurrent
-            ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-400 font-extrabold'
-            : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300';
-          return `
-            <th class="border table-cell-border min-w-[72px] py-1 text-center ${bgCls}" title="${escapeHtml(w.desc)} (${w.dates})">
-              <div class="flex flex-col items-center justify-center leading-tight">
-                <span class="text-[11px] font-black">${w.label} ${isCurrent ? 'ðŸ”´' : ''}</span>
-                <span class="text-[9px] opacity-75">${w.dates}</span>
-                ${isCurrent ? '<span class="text-[8px] uppercase tracking-tighter bg-rose-500 text-white px-1 rounded-sm mt-0.5">HOJE</span>' : ''}
-              </div>
-            </th>
-          `;
-        }).join('');
-      } else {
-        tr.innerHTML = (projectConfig.days || []).map((d) => {
-          const isTodayClass = d.isToday ? 'bg-sky-500/20 text-sky-600 font-extrabold border-sky-400' : '';
-          const weekendClass = d.isWeekend ? 'bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold' : '';
-          return `
-            <th class="border table-cell-border w-7 py-1 ${isTodayClass} ${weekendClass}" title="${d.isWeekend ? 'Fim de semana' : ''} ${d.isToday ? '- Hoje' : ''}">
-              <span class="text-[10px] block opacity-80 leading-tight">${escapeHtml(d.weekday)}</span>
-              <span class="text-xs font-bold block leading-tight">${escapeHtml(d.dayNum)}</span>
-            </th>
-          `;
-        }).join('');
-      }
+      const days = getActiveWeekDays(activeWeekIndex);
+
+      tr.innerHTML = days.map(d => {
+        const isTodayCls = d.isToday
+          ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-400 font-black'
+          : d.isWeekend
+          ? 'bg-slate-100/80 dark:bg-slate-800/60 text-slate-500 font-semibold'
+          : 'bg-slate-50 dark:bg-slate-900/60 text-slate-700 dark:text-slate-200 font-bold';
+
+        return `
+          <th class="border table-cell-border py-1.5 px-1 text-center w-14 min-w-[52px] ${isTodayCls}" title="${d.weekdayFull}, ${d.fullDateStr} ${d.isToday ? '(HOJE)' : ''}">
+            <div class="flex flex-col items-center justify-center leading-tight">
+              <span class="text-[11px] font-black uppercase tracking-wider">${d.weekday}</span>
+              <span class="text-xs font-black mt-0.5">${d.dateFormatted}</span>
+              ${d.isToday ? '<span class="text-[7.5px] uppercase tracking-tighter bg-rose-500 text-white font-black px-1 rounded-xs mt-0.5 animate-pulse">HOJE 📍</span>' : ''}
+            </div>
+          </th>
+        `;
+      }).join('');
     }
 
     function changeCalendarMonth(delta) {
@@ -23746,58 +23832,44 @@
         prazoBadge = '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-500/15 text-sky-600 border border-sky-500/30">⚡ No Prazo</span>';
       }
 
-      // Linha do Tempo Gantt Semanal Dinâmica
-      const g = getTaskGanttBar(task);
-      let barHtml = '';
-      if (g.hasDates) {
-        let barBorder = 'border-slate-300 dark:border-slate-600';
-        let barBg = 'bg-slate-200/90 dark:bg-slate-700/90';
-        let fillBg = 'bg-slate-400';
-        if (p === 100) {
-          barBorder = 'border-emerald-500/80';
-          barBg = 'bg-emerald-500/20';
-          fillBg = 'bg-emerald-600 dark:bg-emerald-500';
-        } else if (p > 0) {
-          barBorder = 'border-amber-500/80';
-          barBg = 'bg-amber-500/20';
-          fillBg = 'bg-gradient-to-r from-amber-500 to-emerald-500';
+      // Datas da Tarefa para verificar se cada dia da semana está agendado
+      const taskStart = parseSingleDate(task.start, 2026, 9);
+      const taskEnd = parseSingleDate(task.end, 2026, 9);
+      if (taskStart) taskStart.setHours(0, 0, 0, 0);
+      if (taskEnd) taskEnd.setHours(23, 59, 59, 999);
+
+      // Renderização das 7 Células dos Dias da Semana (Seg a Dom)
+      const weekDays = getActiveWeekDays(activeWeekIndex);
+      const daysCellsHtml = weekDays.map(d => {
+        const dTime = d.dateObj.getTime();
+        const isScheduled = (taskStart && taskEnd && dTime >= taskStart.getTime() && dTime <= taskEnd.getTime());
+
+        // Status registrado manualmente ou herdado do período
+        let status = task.days ? (task.days[d.dayKey] || task.days['d' + d.dayNum]) : null;
+        if (!status) {
+          if (p === 100 && isScheduled) status = 'green';
+          else if (isScheduled) status = 'yellow';
+          else status = 'empty';
         }
 
-        barHtml = `
-          <div onclick="cycleTaskStatusQuick(${sIdx}, ${tIdx})" class="absolute top-1 bottom-1 rounded-md shadow-xs border ${barBorder} ${barBg} overflow-hidden cursor-pointer hover:ring-2 hover:ring-sky-400 transition-all flex items-center group z-10" style="left: ${g.leftPct}%; width: ${g.widthPct}%; min-width: 32px;" title="Clique para alternar status rápido (0% ➔ 50% ➔ 100%) | ${escapeHtml(task.title)} | Período: ${task.start} até ${task.end} | Progresso: ${p}%">
-            <div class="h-full ${fillBg} opacity-90 transition-all duration-300" style="width: ${p}%;"></div>
-            <div class="absolute inset-0 px-2 flex items-center justify-between text-[9px] font-black pointer-events-none drop-shadow-xs truncate">
-              <span class="truncate text-slate-800 dark:text-slate-100">${escapeHtml(task.title)}</span>
-              <span class="shrink-0 ml-1 px-1 py-0.2 rounded font-black ${p===100?'bg-emerald-700 text-white':p>0?'bg-amber-600 text-white':'bg-slate-600 text-white'}">${p}%</span>
-            </div>
-          </div>
-        `;
-      } else {
-        barHtml = `<div class="px-2 text-[10px] opacity-40 italic">Sem datas definidas</div>`;
-      }
+        let boxCls = 'status-empty';
+        let boxTitle = `${d.weekdayFull} (${d.dateFormatted}): Não planejado`;
+        if (status === 'green') {
+          boxCls = 'status-green';
+          boxTitle = `${d.weekdayFull} (${d.dateFormatted}): Executado / Concluído`;
+        } else if (status === 'yellow') {
+          boxCls = 'status-yellow';
+          boxTitle = `${d.weekdayFull} (${d.dateFormatted}): Em Execução`;
+        }
 
-      // Coluna da Linha do Tempo Gantt com Grade de 11 Semanas
-      const timelineCellHtml = `
-        <td class="border table-cell-border p-1 min-w-[550px]" style="height: 38px; vertical-align: middle;">
-          <div class="relative w-full h-8 rounded-lg bg-slate-100/90 dark:bg-slate-800/80 overflow-hidden border border-slate-200 dark:border-slate-700/80 flex items-center">
-            <!-- Grade de 11 Semanas alinhada 1:1 com o cabeçalho -->
-            <div class="absolute inset-0 grid grid-cols-11 pointer-events-none">
-              <div class="border-r border-slate-200/60 dark:border-slate-700/40"></div>
-              <div class="border-r border-slate-200/60 dark:border-slate-700/40"></div>
-              <div class="border-r border-slate-200/60 dark:border-slate-700/40"></div>
-              <div class="border-r-2 border-dashed border-rose-500 bg-rose-500/10" title="Semana 4 (19/10/2026) - HOJE"></div>
-              <div class="border-r border-slate-200/60 dark:border-slate-700/40"></div>
-              <div class="border-r border-slate-200/60 dark:border-slate-700/40"></div>
-              <div class="border-r border-slate-200/60 dark:border-slate-700/40 bg-emerald-500/5" title="Semana 7: Entrega Resíduos/DML"></div>
-              <div class="border-r border-slate-200/60 dark:border-slate-700/40"></div>
-              <div class="border-r border-slate-200/60 dark:border-slate-700/40"></div>
-              <div class="border-r border-slate-200/60 dark:border-slate-700/40"></div>
-              <div class="bg-sky-500/5" title="Semana 11: Entrega Metálica"></div>
-            </div>
-            ${barHtml}
-          </div>
-        </td>
-      `;
+        const todayBorder = d.isToday ? 'border-rose-400 bg-rose-500/10' : 'table-cell-border';
+
+        return `
+          <td class="border ${todayBorder} p-0 text-center w-14 min-w-[52px]" style="vertical-align:middle;height:32px;">
+            <div class="day-box ${boxCls}" onclick="cycleWeeklyDayStatus(${sIdx}, ${tIdx}, '${d.dayKey}', '${d.dayNum}')" title="${boxTitle} (Clique para alternar)"></div>
+          </td>
+        `;
+      }).join('');
 
       return `
         <tr class="${rowBgClass} transition-colors border-b table-cell-border">
@@ -23824,9 +23896,9 @@
           <td class="border table-cell-border p-1.5 text-center">
             <div class="flex flex-col items-center justify-center leading-tight">
               <div class="flex items-center gap-1 text-[11px] font-bold">
-                <span>${task.start || '—'}</span>
+                <span contenteditable="true" onblur="updateTaskField(${sIdx}, ${tIdx}, 'start', this.innerText)" class="cell-editable hover:text-sky-600 cursor-pointer" title="Clique para editar">${task.start || '—'}</span>
                 <span class="opacity-40">➔</span>
-                <span>${task.end || '—'}</span>
+                <span contenteditable="true" onblur="updateTaskField(${sIdx}, ${tIdx}, 'end', this.innerText)" class="cell-editable hover:text-sky-600 cursor-pointer" title="Clique para editar">${task.end || '—'}</span>
               </div>
               <span class="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-semibold mt-1">
                 ${m.totalDays > 0 ? m.totalDays + ' dias' : '—'}
@@ -23851,10 +23923,10 @@
             ${prazoBadge}
           </td>
 
-          <!-- Col 6: Linha do Tempo Gantt Semanal (11 Semanas) -->
-          ${timelineCellHtml}
+          <!-- Col 6 a 12: Os 7 Dias da Semana (Seg a Dom) -->
+          ${daysCellsHtml}
 
-          <!-- Col 7: Ação -->
+          <!-- Col 13: Ação -->
           <td class="border table-cell-border text-center no-print p-1">
             <button onclick="deleteTask(${sIdx}, ${tIdx})" title="Excluir etapa" class="p-1 text-rose-400 hover:text-rose-600 hover:bg-rose-500/10 rounded transition text-xs cursor-pointer">
               🗑️
@@ -23868,6 +23940,8 @@
       const tbody = document.getElementById('sheet-body');
       if (!tbody) return;
       let html = '';
+
+      updateExecutiveWeekUI();
 
       const archivedCount = projectData.filter(s => s.archived).length;
       const countEl = document.getElementById('archived-frentes-badge');
@@ -23884,7 +23958,8 @@
         targetSections = projectData.map((sec, sIdx) => ({ sec, sIdx })).filter(({ sec }) => !sec.archived);
       }
 
-      const totalTableCols = 7;
+      const totalTableCols = 13; // 5 colunas à esquerda + 7 dias da semana + 1 ação
+      const weekDays = getActiveWeekDays(activeWeekIndex);
 
       if (cronogramaProjectFilter === 'archived') {
         html += `
@@ -23912,45 +23987,19 @@
           }
         });
 
-        // Visão Executiva da Frente no Gantt (Barra Geral da Frente)
         const secG = getSectionGanttBar(sec);
-        let secGanttBarHtml = '';
-        if (secG.hasDates) {
-          const avgP = secG.avgProgress;
-          let fillClass = avgP === 100 ? 'bg-emerald-600' : avgP > 0 ? 'bg-gradient-to-r from-amber-500 to-indigo-600' : 'bg-slate-400';
-          secGanttBarHtml = `
-            <div class="relative w-full h-7 rounded-lg bg-white/70 dark:bg-slate-900/60 overflow-hidden border border-slate-300 dark:border-slate-700 flex items-center">
-              <div class="absolute inset-0 grid grid-cols-11 pointer-events-none opacity-40">
-                <div class="border-r border-slate-300 dark:border-slate-700"></div>
-                <div class="border-r border-slate-300 dark:border-slate-700"></div>
-                <div class="border-r border-slate-300 dark:border-slate-700"></div>
-                <div class="border-r-2 border-dashed border-rose-500 bg-rose-500/10"></div>
-                <div class="border-r border-slate-300 dark:border-slate-700"></div>
-                <div class="border-r border-slate-300 dark:border-slate-700"></div>
-                <div class="border-r border-slate-300 dark:border-slate-700 bg-emerald-500/5"></div>
-                <div class="border-r border-slate-300 dark:border-slate-700"></div>
-                <div class="border-r border-slate-300 dark:border-slate-700"></div>
-                <div class="border-r border-slate-300 dark:border-slate-700"></div>
-                <div class="bg-sky-500/5"></div>
-              </div>
-              <div class="absolute top-1 bottom-1 rounded shadow-xs overflow-hidden border border-indigo-500/50 bg-indigo-500/20 flex items-center" style="left: ${secG.leftPct}%; width: ${secG.widthPct}%;">
-                <div class="h-full ${fillClass} opacity-80" style="width: ${avgP}%;"></div>
-                <div class="absolute inset-0 px-2 flex items-center justify-between text-[9px] font-black text-slate-800 dark:text-slate-100 truncate drop-shadow-xs">
-                  <span class="truncate">Frente Geral</span>
-                  <span class="shrink-0 ml-1 px-1 bg-indigo-700 text-white rounded">${avgP}%</span>
-                </div>
-              </div>
-            </div>
-          `;
-        } else {
-          secGanttBarHtml = '<div class="text-[10px] opacity-40 italic text-center">—</div>';
-        }
-
         const secAvgProg = secG.avgProgress || 0;
 
-        // Linha Cabeçalho da Frente de Obra (Alinhada perfeitamente nas 7 colunas)
+        // Células dos 7 dias para a linha da Frente
+        const secDaysCells = weekDays.map(d => `
+          <td class="border table-cell-border p-1 text-center w-14 min-w-[52px] ${d.isToday ? 'bg-rose-500/10 border-rose-400' : ''}">
+            <span class="text-[9px] font-bold opacity-60">${d.weekday}</span>
+          </td>
+        `).join('');
+
+        // Linha Cabeçalho da Frente de Obra (Alinhada perfeitamente nas 13 colunas)
         html += `
-          <tr class="table-header font-bold border-t-2 border-b table-cell-border bg-slate-100/80 dark:bg-slate-800/80">
+          <tr class="table-header font-bold border-t-2 border-b table-cell-border bg-slate-100/90 dark:bg-slate-800/90">
             <!-- Col 1: Prioridade Frente -->
             <td class="border table-cell-border p-1.5 text-center text-sm font-extrabold no-print">
               <div class="flex items-center justify-center gap-1">
@@ -23992,12 +24041,10 @@
               <span class="text-emerald-600">${completedList.length}✔</span> / <span class="text-amber-500">${pendingList.length}⚡</span>
             </td>
 
-            <!-- Col 6: Linha do Tempo Geral da Frente -->
-            <td class="border table-cell-border p-1 min-w-[550px]">
-              ${secGanttBarHtml}
-            </td>
+            <!-- Col 6 a 12: Os 7 Dias da Semana -->
+            ${secDaysCells}
 
-            <!-- Col 7: Ação Frente -->
+            <!-- Col 13: Ação Frente -->
             <td class="border table-cell-border text-center no-print p-1">
               <div class="flex items-center justify-center gap-1">
                 <button onclick="openNewTaskModal(${sIdx})" title="Adicionar etapa no escopo desta frente" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-bold transition flex items-center justify-center gap-1 shadow-xs cursor-pointer">
@@ -24029,13 +24076,16 @@
               html += `
                 <tr class="bg-amber-500/10 dark:bg-amber-950/30 border-t border-b border-amber-500/30 text-amber-800 dark:text-amber-300 font-bold text-[11px]">
                   <td class="border table-cell-border p-1 text-center font-black">⚡</td>
-                  <td colspan="5" class="p-1 pl-3">
+                  <td colspan="4" class="p-1 pl-3">
                     <div class="flex items-center justify-between pr-2">
                       <span class="flex items-center gap-1.5">
                         <span>⚡</span> <strong>Atividades em Andamento / Prioridade</strong> (${pendingList.length})
                       </span>
                       <span class="text-[10px] font-normal opacity-75">Foco de execução imediata</span>
                     </div>
+                  </td>
+                  <td colspan="7" class="border table-cell-border text-[9.5px] text-center font-semibold text-amber-700 dark:text-amber-300">
+                    Acompanhamento Diário: Semana ${OBRA_SEMANAS[activeWeekIndex].label}
                   </td>
                   <td class="border table-cell-border no-print"></td>
                 </tr>
@@ -24054,13 +24104,16 @@
               html += `
                 <tr class="bg-emerald-500/10 dark:bg-emerald-950/30 border-t border-b border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-bold text-[11px]">
                   <td class="border table-cell-border p-1 text-center font-black">✔</td>
-                  <td colspan="5" class="p-1 pl-3">
+                  <td colspan="4" class="p-1 pl-3">
                     <div class="flex items-center justify-between pr-2">
                       <span class="flex items-center gap-1.5">
                         <span>✔</span> <strong>Atividades Concluídas</strong> (${completedList.length})
                       </span>
                       <span class="text-[10px] font-normal opacity-75">Histórico concluído com sucesso</span>
                     </div>
+                  </td>
+                  <td colspan="7" class="border table-cell-border text-[9.5px] text-center font-semibold text-emerald-700 dark:text-emerald-300">
+                    Concluídas na Semana ${OBRA_SEMANAS[activeWeekIndex].label}
                   </td>
                   <td class="border table-cell-border no-print"></td>
                 </tr>
