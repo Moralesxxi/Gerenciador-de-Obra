@@ -633,6 +633,150 @@
 
     </div>
 
+    
+    <!-- NOVO PAINEL EXECUTIVO NO DASHBOARD: CONTROLE DE FUNDAÇÕES, SAPATAS, LASTRO & CONCRETAGEM -->
+    <div class="card-bg border rounded-2xl p-5 shadow-sm space-y-4 bg-gradient-to-br from-indigo-500/5 via-transparent to-sky-500/5 border-indigo-500/20">
+      <div class="flex items-center justify-between flex-wrap gap-3 pb-3 border-b table-cell-border">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl font-black shadow-inner">
+            🏗️
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="text-base font-black text-slate-800 dark:text-slate-100">Acompanhamento Executivo de Fundações &amp; Sapatas</h3>
+              <span class="text-[9.5px] font-black uppercase bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-500/30">Frente 2 • ADM / Passarela</span>
+            </div>
+            <p class="text-xs opacity-70 mt-0.5">Medições e avanço físico em tempo real: escavação mecânica, lastro magro, concretagem estrutural e armaduras</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openEditSapatasModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl text-xs transition shadow flex items-center gap-1.5 cursor-pointer hover:scale-105" title="Editar medições de sapatas, lastro e concretagem">
+            <span>✏️</span> Editar Medições
+          </button>
+          <button onclick="switchTab('cronograma')" class="px-3.5 py-2 sub-box hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs transition border table-cell-border flex items-center gap-1.5 cursor-pointer">
+            <span>📅</span> Ver no Cronograma &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid com os 4 Pilares de Medição da Fundação -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        
+        <!-- 1. Escavação de Sapatas -->
+        <div class="sub-box border table-cell-border p-3.5 rounded-xl space-y-2 relative overflow-hidden group shadow-2xs">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <span>⛏️</span> Sapatas Escavadas
+            </span>
+            <span id="dash-sapatas-pct-badge" class="text-[10px] text-emerald-600 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.2 rounded-full">84,8%</span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1">
+            <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400 cursor-pointer" onclick="openEditSapatasModal()" title="Clique para editar">
+              <span id="dash-sapatas-escavadas">28</span><span class="text-sm font-bold opacity-60">/<span id="dash-sapatas-total-1">33</span></span>
+            </span>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="quickAdjustSapatasDirect('escavadas', -1)" class="w-6 h-6 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 font-black text-xs flex items-center justify-center cursor-pointer transition select-none" title="Diminuir 1 sapata escavada">-</button>
+              <button type="button" onclick="quickAdjustSapatasDirect('escavadas', 1)" class="w-6 h-6 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs flex items-center justify-center cursor-pointer transition select-none" title="Aumentar 1 sapata escavada">+</button>
+            </div>
+          </div>
+          <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden mt-1">
+            <div id="dash-sapatas-esc-bar" class="h-full bg-indigo-600 transition-all duration-300" style="width: 84.8%;"></div>
+          </div>
+          <div class="text-[10px] opacity-60 flex items-center justify-between pt-0.5">
+            <span>Faltam <b id="dash-sapatas-esc-rest">5</b> para concluir</span>
+            <span class="text-indigo-600 dark:text-indigo-400 font-semibold cursor-pointer hover:underline" onclick="openEditSapatasModal()">Ajustar</span>
+          </div>
+        </div>
+
+        <!-- 2. Lastro Magro -->
+        <div class="sub-box border table-cell-border p-3.5 rounded-xl space-y-2 relative overflow-hidden group shadow-2xs">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <span>🧱</span> Lastro Magro (5cm)
+            </span>
+            <span id="dash-sapatas-lastro-pct-badge" class="text-[10px] text-emerald-600 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.2 rounded-full">84,8%</span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1">
+            <span class="text-2xl font-black text-sky-600 dark:text-sky-400 cursor-pointer" onclick="openEditSapatasModal()" title="Clique para editar">
+              <span id="dash-sapatas-lastro">28</span><span class="text-sm font-bold opacity-60">/<span id="dash-sapatas-total-2">33</span></span>
+            </span>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="quickAdjustSapatasDirect('lastro', -1)" class="w-6 h-6 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 font-black text-xs flex items-center justify-center cursor-pointer transition select-none" title="Diminuir 1 lastro magro">-</button>
+              <button type="button" onclick="quickAdjustSapatasDirect('lastro', 1)" class="w-6 h-6 rounded bg-sky-600 hover:bg-sky-500 text-white font-black text-xs flex items-center justify-center cursor-pointer transition select-none" title="Aumentar 1 lastro magro">+</button>
+            </div>
+          </div>
+          <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden mt-1">
+            <div id="dash-sapatas-lastro-bar" class="h-full bg-sky-600 transition-all duration-300" style="width: 84.8%;"></div>
+          </div>
+          <div class="text-[10px] opacity-60 flex items-center justify-between pt-0.5">
+            <span>Faltam <b id="dash-sapatas-lastro-rest">5</b> para concluir</span>
+            <span class="text-sky-600 dark:text-sky-400 font-semibold cursor-pointer hover:underline" onclick="openEditSapatasModal()">Ajustar</span>
+          </div>
+        </div>
+
+        <!-- 3. Concretagem Estrutural -->
+        <div class="sub-box border table-cell-border p-3.5 rounded-xl space-y-2 relative overflow-hidden group shadow-2xs">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <span>🏗️</span> Concretadas (Fck 35)
+            </span>
+            <span id="dash-sapatas-conc-pct-badge" class="text-[10px] font-bold px-2 py-0.2 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">0,0%</span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1">
+            <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400 cursor-pointer" onclick="openEditSapatasModal()" title="Clique para editar">
+              <span id="dash-sapatas-conc">0</span><span class="text-sm font-bold opacity-60">/<span id="dash-sapatas-total-3">33</span></span>
+            </span>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="quickAdjustSapatasDirect('concretadas', -1)" class="w-6 h-6 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 font-black text-xs flex items-center justify-center cursor-pointer transition select-none" title="Diminuir 1 sapata concretada">-</button>
+              <button type="button" onclick="quickAdjustSapatasDirect('concretadas', 1)" class="w-6 h-6 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center cursor-pointer transition select-none" title="Aumentar 1 sapata concretada">+</button>
+            </div>
+          </div>
+          <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden mt-1">
+            <div id="dash-sapatas-conc-bar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%;"></div>
+          </div>
+          <div class="text-[10px] opacity-60 flex items-center justify-between pt-0.5">
+            <span>Faltam <b id="dash-sapatas-conc-rest">33</b> para concretar</span>
+            <span class="text-emerald-600 dark:text-emerald-400 font-semibold cursor-pointer hover:underline" onclick="openEditSapatasModal()">Ajustar</span>
+          </div>
+        </div>
+
+        <!-- 4. Armaduras & Fôrmas -->
+        <div class="sub-box border table-cell-border p-3.5 rounded-xl space-y-2 relative overflow-hidden group shadow-2xs">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <span>⚙️</span> Armaduras &amp; Fôrmas
+            </span>
+            <span class="text-[10px] font-bold px-2 py-0.2 rounded-full bg-purple-500/10 text-purple-600 border border-purple-500/20">Fase Ativa</span>
+          </div>
+          <div class="space-y-1.5 mt-1">
+            <div>
+              <div class="flex items-center justify-between text-[11px] font-bold">
+                <span class="opacity-75">Armaduras Montadas:</span>
+                <span class="text-emerald-600 font-black" id="dash-sapatas-arm-val">100%</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mt-0.5">
+                <div id="dash-sapatas-arm-bar" class="h-full bg-emerald-500" style="width: 100%;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-[11px] font-bold">
+                <span class="opacity-75">Ferragens &amp; Fôrmas:</span>
+                <span class="text-indigo-600 dark:text-indigo-400 font-black" id="dash-sapatas-for-val">74%</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mt-0.5">
+                <div id="dash-sapatas-for-bar" class="h-full bg-indigo-600" style="width: 74%;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="text-[10px] opacity-60 flex items-center justify-between pt-0.5 border-t table-cell-border">
+            <span>Aço CA-50 / Compensado 12mm</span>
+            <span class="text-purple-600 dark:text-purple-400 font-semibold cursor-pointer hover:underline" onclick="openEditSapatasModal()">Editar</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- 2. Linha Intermediária: Progresso por Frente de Serviço + Alertas de Ação -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       
@@ -12534,6 +12678,7 @@
         saveMateriais();
       }
     }
+      if (typeof renderSapatasTracker === 'function') renderSapatasTracker();
 
     // ============================================================
     // MERGE CRONOGRAMA – SEMANA 4 (19/10/2026)
@@ -15849,10 +15994,15 @@
       const arm = Number(sapatasTracker.armaduras) || 0;
       const formas = Number(sapatasTracker.formas) || 0;
 
-      const escPct = total > 0 ? ((esc / total) * 100).toFixed(1).replace('.', ',') : '0,0';
-      const lastroPct = total > 0 ? ((lastro / total) * 100).toFixed(1).replace('.', ',') : '0,0';
-      const concPct = total > 0 ? ((conc / total) * 100).toFixed(1).replace('.', ',') : '0,0';
+      const escPctNum = total > 0 ? (esc / total) * 100 : 0;
+      const lastroPctNum = total > 0 ? (lastro / total) * 100 : 0;
+      const concPctNum = total > 0 ? (conc / total) * 100 : 0;
 
+      const escPct = escPctNum.toFixed(1).replace('.', ',');
+      const lastroPct = lastroPctNum.toFixed(1).replace('.', ',');
+      const concPct = concPctNum.toFixed(1).replace('.', ',');
+
+      // 1. Elementos na Aba Cronograma
       const elEsc = document.getElementById('sapatas-escavadas-val');
       const elTotal = document.getElementById('sapatas-total-val');
       const elPct = document.getElementById('sapatas-pct-val');
@@ -15876,9 +16026,72 @@
       if (elConcPct) elConcPct.innerText = `${concPct}%`;
       if (elArm) elArm.innerText = `${arm}%`;
       if (elFormas) elFormas.innerText = `${formas}%`;
+
+      // 2. Elementos no Novo Painel Executivo da Aba Dashboard Geral
+      const dEsc = document.getElementById('dash-sapatas-escavadas');
+      const dTot1 = document.getElementById('dash-sapatas-total-1');
+      const dTot2 = document.getElementById('dash-sapatas-total-2');
+      const dTot3 = document.getElementById('dash-sapatas-total-3');
+      const dEscPct = document.getElementById('dash-sapatas-pct-badge');
+      const dEscBar = document.getElementById('dash-sapatas-esc-bar');
+      const dEscRest = document.getElementById('dash-sapatas-esc-rest');
+
+      const dLastro = document.getElementById('dash-sapatas-lastro');
+      const dLastroPct = document.getElementById('dash-sapatas-lastro-pct-badge');
+      const dLastroBar = document.getElementById('dash-sapatas-lastro-bar');
+      const dLastroRest = document.getElementById('dash-sapatas-lastro-rest');
+
+      const dConc = document.getElementById('dash-sapatas-conc');
+      const dConcPct = document.getElementById('dash-sapatas-conc-pct-badge');
+      const dConcBar = document.getElementById('dash-sapatas-conc-bar');
+      const dConcRest = document.getElementById('dash-sapatas-conc-rest');
+
+      const dArmVal = document.getElementById('dash-sapatas-arm-val');
+      const dArmBar = document.getElementById('dash-sapatas-arm-bar');
+      const dForVal = document.getElementById('dash-sapatas-for-val');
+      const dForBar = document.getElementById('dash-sapatas-for-bar');
+
+      if (dEsc) dEsc.innerText = esc;
+      if (dTot1) dTot1.innerText = total;
+      if (dTot2) dTot2.innerText = total;
+      if (dTot3) dTot3.innerText = total;
+      if (dEscPct) dEscPct.innerText = `${escPct}%`;
+      if (dEscBar) dEscBar.style.width = `${Math.min(100, escPctNum)}%`;
+      if (dEscRest) dEscRest.innerText = Math.max(0, total - esc);
+
+      if (dLastro) dLastro.innerText = lastro;
+      if (dLastroPct) dLastroPct.innerText = `${lastroPct}%`;
+      if (dLastroBar) dLastroBar.style.width = `${Math.min(100, lastroPctNum)}%`;
+      if (dLastroRest) dLastroRest.innerText = Math.max(0, total - lastro);
+
+      if (dConc) dConc.innerText = conc;
+      if (dConcPct) {
+        dConcPct.innerText = `${concPct}%`;
+        if (conc > 0) {
+          dConcPct.className = 'text-[10px] text-emerald-600 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.2 rounded-full';
+        }
+      }
+      if (dConcBar) dConcBar.style.width = `${Math.min(100, concPctNum)}%`;
+      if (dConcRest) dConcRest.innerText = Math.max(0, total - conc);
+
+      if (dArmVal) dArmVal.innerText = `${arm}%`;
+      if (dArmBar) dArmBar.style.width = `${Math.min(100, arm)}%`;
+      if (dForVal) dForVal.innerText = `${formas}%`;
+      if (dForBar) dForBar.style.width = `${Math.min(100, formas)}%`;
     }
 
-    function syncSapatasToCronograma() {
+    function quickAdjustSapatasDirect(field, delta) {
+      const current = Number(sapatasTracker[field]) || 0;
+      const max = Number(sapatasTracker.total) || 33;
+      let next = current + delta;
+      if (next < 0) next = 0;
+      if (next > max && field !== 'armaduras' && field !== 'formas') next = max;
+      sapatasTracker[field] = next;
+      saveSapatasTracker();
+      renderSapatasTracker();
+      if (typeof renderSheetBody === 'function') renderSheetBody();
+    }
+\n    function syncSapatasToCronograma() {
       const total = Number(sapatasTracker.total) || 33;
       const esc = Number(sapatasTracker.escavadas) || 0;
       const lastro = Number(sapatasTracker.lastro) || 0;
