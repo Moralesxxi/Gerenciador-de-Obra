@@ -1,5 +1,8 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR"><head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gerenciamento Integrado Obra Natura - Cronograma, Materiais &amp; Dashboard</title>
@@ -19018,10 +19021,6 @@
       const normalBtnClass = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 opacity-70 hover:opacity-100";
       if (btnDashboard) btnDashboard.className = normalBtnClass;
       if (btnCronograma) btnCronograma.className = normalBtnClass;
-        if (typeof applyConfigToHeader === 'function') applyConfigToHeader();
-        if (typeof renderDaysHeader === 'function') renderDaysHeader();
-        if (typeof renderSheetBody === 'function') renderSheetBody();
-        if (typeof updateKPIs === 'function') updateKPIs();
       if (btnMateriais) btnMateriais.className = normalBtnClass;
       if (btnFinanceiro) btnFinanceiro.className = normalBtnClass;
       if (btnFaltas) btnFaltas.className = normalBtnClass;
@@ -22774,7 +22773,7 @@
       currentQuinzenaIndex = 1;
     }
 
-    let cronogramaTimelineMode = localStorage.getItem('obra_natura_cronograma_timeline_mode') || 'quinzenal';
+    let cronogramaTimelineMode = 'quinzenal'; // Sempre inicia na visão quinzenal com as bolinhas
     if (cronogramaTimelineMode === 'mensal') cronogramaTimelineMode = 'quinzenal';
 
     function setCronogramaTimelineMode(mode) {
@@ -24497,7 +24496,10 @@
 
         ${pdfFooter(dateStr, timeStr)}`;
 
-      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Dashboard – Obra Natura</title><style>${pdfBaseStyles()}</style></head><body>${body}</body></html>`);
+      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0"><meta charset="UTF-8"><title>Dashboard – Obra Natura</title><style>${pdfBaseStyles()}</style></head><body>${body}</body></html>`);
     }
 
     // ---- PDF: CRONOGRAMA ----
@@ -24593,7 +24595,10 @@
         ${sectionsHtml}
         ${pdfFooter(dateStr, timeStr)}`;
 
-      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Cronograma – Obra Natura</title><style>${pdfBaseStyles()} .section-block { page-break-inside: avoid; }</style></head><body>${body}</body></html>`);
+      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0"><meta charset="UTF-8"><title>Cronograma – Obra Natura</title><style>${pdfBaseStyles()} .section-block { page-break-inside: avoid; }</style></head><body>${body}</body></html>`);
     }
 
     // ---- PDF: MATERIAIS ----
@@ -24687,7 +24692,10 @@
 
         ${pdfFooter(dateStr, timeStr)}`;
 
-      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Materiais – Obra Natura</title><style>${pdfBaseStyles()}</style></head><body>${body}</body></html>`);
+      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0"><meta charset="UTF-8"><title>Materiais – Obra Natura</title><style>${pdfBaseStyles()}</style></head><body>${body}</body></html>`);
     }
 
     // ---- PDF: FINANCEIRO ----
@@ -24803,7 +24811,10 @@
 
         ${pdfFooter(dateStr, timeStr)}`;
 
-      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Financeiro – Obra Natura</title><style>${pdfBaseStyles()}</style></head><body>${body}</body></html>`);
+      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0"><meta charset="UTF-8"><title>Financeiro – Obra Natura</title><style>${pdfBaseStyles()}</style></head><body>${body}</body></html>`);
     }
 
     // ---- PDF: COMPLETO (todas as abas) ----
@@ -24929,6 +24940,9 @@
       const htmlDoc = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <title>Compras Pendentes – Gerenciador de Obra</title>
   <style>
@@ -25344,6 +25358,9 @@
       const htmlDoc = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <title>Relatório de Compras & Materiais – Obra Natura</title>
   <style>
@@ -26588,7 +26605,10 @@
         ${pdfFooter(dateStr, timeStr)}
       `;
 
-      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatório de Faltas – Obra Natura</title><style>${pdfBaseStyles()}</style></head><body>${body}</body></html>`);
+      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0"><meta charset="UTF-8"><title>Relatório de Faltas – Obra Natura</title><style>${pdfBaseStyles()}</style></head><body>${body}</body></html>`);
     }
 
     // =========================================================================
@@ -29492,6 +29512,9 @@
       const htmlDoc = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <title>Orçamento Detalhado de Materiais – ${escapeHtml(destino)}</title>
   <style>
