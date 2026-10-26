@@ -10922,6 +10922,20 @@
   </div>
 
   <script>
+    // ============================================================
+    // CONTROLE GLOBAL DE SAPATAS (OBRA NATURA)
+    // ============================================================
+    const STORAGE_SAPATAS_KEY = 'obra_natura_sapatas_tracker';
+    const DEFAULT_SAPATAS = {
+      total: 33,
+      escavadas: 28,
+      lastro: 28,
+      concretadas: 0,
+      armaduras: 100,
+      formas: 74
+    };
+    let sapatasTracker = JSON.parse(JSON.stringify(DEFAULT_SAPATAS));
+
     const STORAGE_DATA_KEY = 'obra_natura_light_data_v2';
     const STORAGE_CONFIG_KEY = 'obra_natura_light_config_v2';
     const STORAGE_OWNERS_KEY = 'obra_natura_light_owners_v1';
@@ -11682,73 +11696,71 @@
     function switchTab(tabName) {
       activeTabName = tabName;
 
-      const tabDashboard = document.getElementById('tab-content-dashboard');
-      const tabCronograma = document.getElementById('tab-content-cronograma');
-      const tabMateriais = document.getElementById('tab-content-materiais');
-      const tabFinanceiro = document.getElementById('tab-content-financeiro');
-      const tabFaltas = document.getElementById('tab-content-faltas');
-      const tabDiario = document.getElementById('tab-content-diario');
-      const tabQuantitativos = document.getElementById('tab-content-quantitativos');
-
-      const btnDashboard = document.getElementById('tab-btn-dashboard');
-      const btnCronograma = document.getElementById('tab-btn-cronograma');
-      const btnMateriais = document.getElementById('tab-btn-materiais');
-      const btnFinanceiro = document.getElementById('tab-btn-financeiro');
-      const btnFaltas = document.getElementById('tab-btn-faltas');
-      const btnDiario = document.getElementById('tab-btn-diario');
-      const btnQuantitativos = document.getElementById('tab-btn-quantitativos');
+      const allTabs = [
+        { id: 'tab-content-dashboard', btn: 'tab-btn-dashboard', color: 'text-sky-600', render: function() {
+          if (typeof renderDashboard === 'function') renderDashboard();
+          if (typeof renderSapatasTracker === 'function') renderSapatasTracker();
+        }},
+        { id: 'tab-content-cronograma', btn: 'tab-btn-cronograma', color: 'text-emerald-600', render: function() {
+          if (typeof applyConfigToHeader === 'function') applyConfigToHeader();
+          if (typeof renderDaysHeader === 'function') renderDaysHeader();
+          if (typeof renderSheetBody === 'function') renderSheetBody();
+          if (typeof updateKPIs === 'function') updateKPIs();
+          if (typeof renderSapatasTracker === 'function') renderSapatasTracker();
+        }},
+        { id: 'tab-content-materiais', btn: 'tab-btn-materiais', color: 'text-amber-600', render: function() {
+          if (typeof renderMateriaisTab === 'function') renderMateriaisTab();
+        }},
+        { id: 'tab-content-financeiro', btn: 'tab-btn-financeiro', color: 'text-emerald-600', render: function() {
+          if (typeof renderFinanceiroTab === 'function') renderFinanceiroTab();
+        }},
+        { id: 'tab-content-faltas', btn: 'tab-btn-faltas', color: 'text-rose-600', render: function() {
+          if (typeof renderFaltasTab === 'function') renderFaltasTab();
+        }},
+        { id: 'tab-content-diario', btn: 'tab-btn-diario', color: 'text-sky-600', render: function() {
+          if (typeof renderDiarioTab === 'function') renderDiarioTab();
+        }},
+        { id: 'tab-content-quantitativos', btn: 'tab-btn-quantitativos', color: 'text-sky-600', render: function() {
+          if (typeof updateParametricFormFields === 'function') updateParametricFormFields();
+          if (typeof renderQuantitativosTab === 'function') renderQuantitativosTab();
+        }}
+      ];
 
       const normalBtnClass = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 opacity-70 hover:opacity-100";
-      if (btnDashboard) btnDashboard.className = normalBtnClass;
-      if (btnCronograma) btnCronograma.className = normalBtnClass;
-      if (btnMateriais) btnMateriais.className = normalBtnClass;
-      if (btnFinanceiro) btnFinanceiro.className = normalBtnClass;
-      if (btnFaltas) btnFaltas.className = normalBtnClass;
-      if (btnDiario) btnDiario.className = normalBtnClass;
-      if (btnQuantitativos) btnQuantitativos.className = normalBtnClass;
 
-      if (tabDashboard) tabDashboard.classList.add('hidden');
-      if (tabCronograma) tabCronograma.classList.add('hidden');
-      if (tabMateriais) tabMateriais.classList.add('hidden');
-      if (tabFinanceiro) tabFinanceiro.classList.add('hidden');
-      if (tabFaltas) tabFaltas.classList.add('hidden');
-      if (tabDiario) tabDiario.classList.add('hidden');
-      if (tabQuantitativos) tabQuantitativos.classList.add('hidden');
+      allTabs.forEach(function(t) {
+        const el = document.getElementById(t.id);
+        const btn = document.getElementById(t.btn);
+        if (el) {
+          el.classList.add('hidden');
+          el.style.display = 'none';
+        }
+        if (btn) {
+          btn.className = normalBtnClass;
+        }
+      });
 
-      if (tabName === 'dashboard') {
-        if (tabDashboard) tabDashboard.classList.remove('hidden');
-        if (btnDashboard) btnDashboard.className = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 card-bg text-sky-600 shadow-sm border";
-        renderDashboard();
-      } else if (tabName === 'cronograma') {
-        if (tabCronograma) tabCronograma.classList.remove('hidden');
-        if (btnCronograma) btnCronograma.className = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 card-bg text-emerald-600 shadow-sm border";
-        if (typeof applyConfigToHeader === 'function') applyConfigToHeader();
-        if (typeof renderDaysHeader === 'function') renderDaysHeader();
-        if (typeof renderSheetBody === 'function') renderSheetBody();
-        if (typeof updateKPIs === 'function') updateKPIs();
-        if (typeof renderSapatasTracker === 'function') renderSapatasTracker();
-      } else if (tabName === 'materiais') {
-        if (tabMateriais) tabMateriais.classList.remove('hidden');
-        if (btnMateriais) btnMateriais.className = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 card-bg text-amber-600 shadow-sm border";
-        renderMateriaisTab();
-      } else if (tabName === 'financeiro') {
-        if (tabFinanceiro) tabFinanceiro.classList.remove('hidden');
-        if (btnFinanceiro) btnFinanceiro.className = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 card-bg text-emerald-600 shadow-sm border";
-        renderFinanceiroTab();
-      } else if (tabName === 'faltas') {
-        if (tabFaltas) tabFaltas.classList.remove('hidden');
-        if (btnFaltas) btnFaltas.className = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 card-bg text-rose-600 shadow-sm border";
-        renderFaltasTab();
-      } else if (tabName === 'diario') {
-        if (tabDiario) tabDiario.classList.remove('hidden');
-        if (btnDiario) btnDiario.className = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 card-bg text-sky-600 shadow-sm border";
-        renderDiarioTab();
-      } else if (tabName === 'quantitativos') {
-        if (tabQuantitativos) tabQuantitativos.classList.remove('hidden');
-        if (btnQuantitativos) btnQuantitativos.className = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 card-bg text-sky-600 shadow-sm border";
-        updateParametricFormFields();
+      const target = allTabs.find(function(t) { return t.id === 'tab-content-' + tabName; });
+      if (target) {
+        const targetEl = document.getElementById(target.id);
+        const targetBtn = document.getElementById(target.btn);
+        if (targetEl) {
+          targetEl.classList.remove('hidden');
+          targetEl.style.display = 'block';
+        }
+        if (targetBtn) {
+          targetBtn.className = "px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 card-bg " + target.color + " shadow-sm border";
+        }
+        if (typeof target.render === 'function') {
+          try {
+            target.render();
+          } catch(err) {
+            console.error('Erro ao renderizar aba ' + tabName + ':', err);
+          }
+        }
       }
     }
+    window.switchTab = switchTab;
 
     function renderDashboard() {
       let totalTasks = 0;
@@ -12678,7 +12690,6 @@
         saveMateriais();
       }
     }
-      if (typeof renderSapatasTracker === 'function') renderSapatasTracker();
 
     // ============================================================
     // MERGE CRONOGRAMA – SEMANA 4 (19/10/2026)
@@ -15955,17 +15966,7 @@
     // ============================================================
     // SISTEMA DE MEDIÇÕES DE SAPATAS, LASTRO E CONCRETAGEM
     // ============================================================
-    const STORAGE_SAPATAS_KEY = 'obra_natura_sapatas_tracker';
-    const DEFAULT_SAPATAS = {
-      total: 33,
-      escavadas: 28,
-      lastro: 28,
-      concretadas: 0,
-      armaduras: 100,
-      formas: 74
-    };
-
-    let sapatasTracker = JSON.parse(JSON.stringify(DEFAULT_SAPATAS));
+    // (STORAGE_SAPATAS_KEY, DEFAULT_SAPATAS e sapatasTracker inicializados no topo do script)
 
     function loadSapatasTracker() {
       const saved = localStorage.getItem(STORAGE_SAPATAS_KEY);
@@ -23090,7 +23091,11 @@ TOTAL GERAL CONSOLIDADO:
       injectQuantitativoToDashboard();
     }
 
-    window.addEventListener('DOMContentLoaded', initApp);
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
   </script>
   <!-- ============================================================ -->
   <!-- FISCAL OPERADOR IA DA OBRA NATURA - DRAWER & CHAT INTERATIVO -->
