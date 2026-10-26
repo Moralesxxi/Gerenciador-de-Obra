@@ -5,8 +5,6 @@
   <title>Gerenciamento Integrado Obra Natura - Cronograma, Materiais &amp; Dashboard</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
     body {
       transition: background-color 0.2s, color 0.2s;
@@ -204,11 +202,6 @@
               </button>
               <span>•</span>
               <span id="save-timestamp" class="text-slate-500">Salvo às 08:17:36</span>
-              <span>•</span>
-              <button id="cloud-sync-badge" onclick="openSyncModal()" title="Status da sincronização em nuvem (Clique para configurar)" class="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-300 font-semibold cursor-pointer transition border border-slate-500/20 text-[11px]">
-                <span class="w-2 h-2 rounded-full bg-slate-400" id="cloud-badge-dot"></span>
-                <span id="cloud-badge-text">Nuvem: Local</span>
-              </button>
             </div>
           </div>
         </div>
@@ -313,7 +306,7 @@
         <!-- ABA 5: CONTROLE DE FALTAS & PRESENÇA -->
         <button id="tab-btn-faltas" onclick="switchTab('faltas')" class="px-3.5 py-2 font-bold rounded-lg transition text-xs flex items-center gap-1.5 opacity-70 hover:opacity-100" title="Controle de Faltas, Presença e Atestados dos Executores">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-          <span>Faltas, Presença &amp; Produção</span>
+          <span>Faltas &amp; Presença</span>
           
         </button>
 
@@ -399,67 +392,6 @@
 
       <!-- Corpo com rolagem -->
       <div class="p-6 space-y-4 overflow-y-auto flex-1">
-
-        
-        <!-- Opção 0: Sincronização em Nuvem em Tempo Real (Firebase) -->
-        <div class="border-2 border-emerald-500/40 rounded-2xl p-4 bg-emerald-50/20 dark:bg-emerald-950/20 shadow-sm space-y-3">
-          <div class="flex items-start gap-3">
-            <div class="p-2.5 bg-emerald-500/15 rounded-xl text-emerald-600 shrink-0 mt-0.5">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-            </div>
-            <div class="flex-1">
-              <div class="flex items-center justify-between">
-                <div class="font-black text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
-                  <span>☁️ Sincronização Automática em Nuvem</span>
-                </div>
-                <span id="cloud-status-pill" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Desconectado</span>
-              </div>
-              <p class="text-xs opacity-75 mt-1 leading-relaxed">
-                Conecte um banco de dados gratuito (Google Firebase) para que todos os seus computadores e celulares acessem e atualizem <strong>os mesmos dados em tempo real</strong> pelo Vercel.
-              </p>
-            </div>
-          </div>
-
-          <!-- Painel quando conectado -->
-          <div id="cloud-connected-panel" class="hidden p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Conectado à Nuvem (Sincronização em tempo real ativa)</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="syncNowToCloud(true)" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold transition shadow-xs cursor-pointer">
-                Sincronizar Agora
-              </button>
-              <button type="button" onclick="disconnectCloudFirebase()" class="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 rounded-lg text-[11px] font-bold border border-rose-500/20 transition cursor-pointer">
-                Desconectar
-              </button>
-            </div>
-          </div>
-
-          <!-- Formulário de configuração -->
-          <div id="cloud-config-form" class="space-y-2.5 pt-1">
-            <div class="text-[11px] opacity-80 font-semibold">
-              Cole abaixo as configurações do seu projeto Firebase (crie grátis no console.firebase.google.com):
-            </div>
-            <textarea id="cloud-firebase-config-input" rows="3" placeholder='{
-  "apiKey": "AIzaSy...",
-  "databaseURL": "https://seu-projeto-default-rtdb.firebaseio.com",
-  "projectId": "seu-projeto"
-}' class="w-full border table-cell-border rounded-xl p-2.5 text-[11px] font-mono card-bg resize-none focus:outline-none focus:border-emerald-500 shadow-inner"></textarea>
-            
-            <div class="flex items-center justify-between gap-2 flex-wrap">
-              <div class="text-[10px] opacity-60">
-                🔒 Chaves salvas apenas no seu navegador local
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="saveCloudFirebaseConfig()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition shadow-sm cursor-pointer flex items-center gap-1.5 hover:scale-105">
-                  <span>⚡</span> Conectar &amp; Salvar na Nuvem
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
 
         <!-- Status atual -->
         <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3 text-xs">
@@ -1523,39 +1455,32 @@
     <div class="card-bg border rounded-2xl p-4 shadow-sm bg-gradient-to-r from-sky-500/10 via-indigo-500/5 to-emerald-500/10 border-sky-500/30 space-y-3">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
-          <div id="exec-week-badge-box" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex flex-col items-center justify-center font-black shadow-md">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex flex-col items-center justify-center font-black shadow-md">
             <span class="text-xs leading-none opacity-80">SEM.</span>
-            <span id="exec-week-badge-num" class="text-lg leading-none">04</span>
+            <span class="text-lg leading-none">04</span>
           </div>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
-              <h3 id="exec-panel-title" class="font-black text-sm text-slate-800 dark:text-slate-100">Cronograma Semanal — Acompanhamento dos Dias da Semana (Seg a Dom)</h3>
-              <span id="exec-panel-today-badge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs animate-pulse">Hoje: Domingo</span>
+              <h3 class="font-black text-sm text-slate-800 dark:text-slate-100">Painel Executivo de Acompanhamento — Semana 4 (19/10/2026)</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs animate-pulse">Semana Vigente</span>
             </div>
-            <p id="exec-panel-subtitle" class="text-xs opacity-75 mt-0.5">
-              Semana Vigente: <strong>19/10 a 25/10/2026</strong> • Alvenarias & Sapatas • Entrega Resíduos: <strong>13/11 (S7)</strong> • Metálica: <strong>10/12 (S11)</strong>
+            <p class="text-xs opacity-75 mt-0.5">
+              Obra Natura Ecoparque • Previsão Entrega Resíduos/DML: <strong>13/11/2026 (Semana 7)</strong> • Entrega Metálica: <strong>10/12/2026 (Semana 11)</strong>
             </p>
           </div>
         </div>
 
-        <!-- Controles Rápidos da Semana (Seg a Dom) -->
         <div class="flex items-center gap-2 flex-wrap">
-          <div class="flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 px-3 py-1.5 rounded-xl border border-sky-400/40 shadow-xs">
-            <button onclick="changeActiveWeek(-1)" class="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-300 transition cursor-pointer font-black text-xs" title="Semana Anterior">
-              ◀
+          <div class="flex items-center gap-1 bg-white/80 dark:bg-slate-800/80 p-1 rounded-xl border border-sky-400/40 shadow-xs">
+            <button id="btn-mode-semanal" onclick="setCronogramaTimelineMode('semanal')" class="px-3 py-1.5 rounded-lg text-xs font-black bg-sky-600 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>📊</span> Gantt Semanal Dinâmico
             </button>
-            <select id="quick-week-selector" onchange="onWeekSelectChange(this.value)" class="bg-transparent text-xs font-black text-sky-700 dark:text-sky-300 outline-none cursor-pointer">
-              <!-- Options populated dynamically -->
-            </select>
-            <button onclick="changeActiveWeek(1)" class="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-300 transition cursor-pointer font-black text-xs" title="Próxima Semana">
-              ▶
-            </button>
-            <button onclick="goToCurrentWeek()" class="ml-1 px-2 py-0.5 bg-rose-500 hover:bg-rose-600 text-white rounded text-[10px] font-black shadow-2xs transition cursor-pointer flex items-center gap-1" title="Ir para a Semana Atual / Hoje">
-              <span>📍</span> Hoje
+            <button id="btn-mode-mensal" onclick="setCronogramaTimelineMode('mensal')" class="px-3 py-1.5 rounded-lg text-xs font-semibold opacity-70 hover:opacity-100 transition flex items-center gap-1.5">
+              <span>📅</span> Dias do Mês (1 a 31)
             </button>
           </div>
 
-          <button onclick="autoSyncAllScheduleDays()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer" title="Recalcula e sincroniza automaticamente a contagem de dias úteis e corridos de todas as etapas">
+          <button onclick="autoSyncAllScheduleDays()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5" title="Recalcula e sincroniza automaticamente a contagem de dias úteis e corridos de todas as etapas">
             <span>⚡</span> Sincronizar Dias Automáticos
           </button>
         </div>
@@ -1619,48 +1544,227 @@
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[11px] text-left">
           <thead>
-            <!-- Linha Principal do Cabeçalho -->
             <tr class="table-header border-b font-bold text-center">
-              <th rowspan="2" class="border table-cell-border p-2 w-14 uppercase text-[10px]">
-                Etapa<br><span class="opacity-70 font-normal">(Escopo)</span>
-              </th>
-              <th rowspan="2" class="border table-cell-border p-2 min-w-[220px] uppercase text-[10px] text-left">
-                Etapa &amp; Responsável
-              </th>
-              <th rowspan="2" class="border table-cell-border p-2 w-28 uppercase text-[10px]">
-                Período<br><span class="opacity-70 font-normal">Início ➔ Fim</span>
-              </th>
-              <th rowspan="2" class="border table-cell-border p-2 w-28 uppercase text-[10px]">
-                Progresso<br><span class="opacity-70 font-normal">% Concluída</span>
-              </th>
-              <th rowspan="2" class="border table-cell-border p-2 w-24 uppercase text-[10px] bg-slate-50 dark:bg-slate-900/40">
-                ⏱️ Prazo<br><span class="opacity-70 font-normal">Saldo / Atraso</span>
-              </th>
-              
-              <!-- Cabeçalho dos 7 Dias da Semana -->
-              <th colspan="7" class="border table-cell-border py-1 uppercase text-xs tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-300">
-                <div class="flex items-center justify-between px-3 py-0.5 flex-wrap gap-2">
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-black">📅 ACOMPANHAMENTO SEMANAL POR DIAS DA SEMANA</span>
-                    <span id="header-week-title" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-600 text-white shadow-2xs">
-                      Semana 4 (19/10 a 25/10/2026)
-                    </span>
-                  </div>
-                  <div class="flex items-center gap-1.5">
-                    <button onclick="changeActiveWeek(-1)" class="px-2 py-0.5 bg-white/70 dark:bg-slate-700 hover:bg-white text-sky-800 dark:text-sky-200 rounded text-[10.5px] font-bold shadow-2xs transition cursor-pointer" title="Semana Anterior">◀ Anterior</button>
-                    <button onclick="goToCurrentWeek()" class="px-2 py-0.5 bg-rose-500 hover:bg-rose-600 text-white rounded text-[10.5px] font-black shadow-2xs transition cursor-pointer" title="Semana Atual de Hoje">📍 Semana Atual</button>
-                    <button onclick="changeActiveWeek(1)" class="px-2 py-0.5 bg-white/70 dark:bg-slate-700 hover:bg-white text-sky-800 dark:text-sky-200 rounded text-[10.5px] font-bold shadow-2xs transition cursor-pointer" title="Próxima Semana">Próxima ▶</button>
-                  </div>
+              <th rowspan="3" class="border table-cell-border p-2 w-16 uppercase text-[10px]">Etapa<br>(Escopo)</th>
+              <th rowspan="3" class="border table-cell-border p-2 min-w-[220px] uppercase text-[10px] text-left">Etapa &amp; Escopo da Atividade</th>
+              <th rowspan="3" class="border table-cell-border p-2 min-w-[170px] uppercase text-[10px] text-left">Responsáveis da Etapa<br><span class="text-[9px] text-indigo-500 font-normal lowercase">(clique para selecionar)</span></th>
+              <th rowspan="3" class="border table-cell-border p-2 w-20 uppercase text-[10px]">Data de<br>Início</th>
+              <th rowspan="3" class="border table-cell-border p-2 w-20 uppercase text-[10px]">Data de<br>Conclusão</th>
+              <th rowspan="3" class="border table-cell-border p-2 w-20 uppercase text-[10px]">% da Etapa<br>Concluída</th>
+              <!-- NOVO: COLUNA DE PRAZO / SALDO -->
+              <th rowspan="3" class="border table-cell-border p-2 w-28 uppercase text-[10px] bg-slate-50 dark:bg-slate-900/40">
+                <div class="flex flex-col items-center justify-center">
+                  <span>⏱️ Prazo</span>
+                  <span class="text-[8px] font-normal opacity-75">Saldo / Atraso</span>
                 </div>
               </th>
+              
+              <th id="header-month-th" colspan="31" class="border table-cell-border py-1 uppercase text-xs tracking-widest bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                <div id="calendar-controls-container" class="flex items-center justify-between px-2 py-0.5">
+          <button onclick="changeCalendarMonth(-1)" class="px-2 py-0.5 bg-white/40 dark:bg-slate-700/60 hover:bg-white/80 dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-sm" title="Mês Anterior">
+            ◀ <span class="hidden sm:inline text-[11px]">Anterior</span>
+          </button>
+          
+          <div class="flex items-center gap-1.5 py-0.5">
+            <span class="text-sm">🗓️</span>
+            <select id="cal-select-month" onchange="onCalendarSelectChange()" class="bg-white dark:bg-slate-800 text-sky-700 dark:text-sky-300 font-black text-xs px-2 py-0.5 rounded border border-sky-400/40 shadow-sm outline-none cursor-pointer">
+              <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9" selected="">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
+            </select>
+            <select id="cal-select-year" onchange="onCalendarSelectChange()" class="bg-white dark:bg-slate-800 text-sky-700 dark:text-sky-300 font-black text-xs px-2 py-0.5 rounded border border-sky-400/40 shadow-sm outline-none cursor-pointer">
+              <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option>
+            </select>
+            <button onclick="goToCurrentMonth()" class="px-2 py-0.5 bg-sky-600 hover:bg-sky-500 text-white rounded text-[10px] font-bold transition shadow-sm" title="Ir para o mês atual de hoje">
+              Hoje
+            </button>
+          </div>
 
-              <th rowspan="2" class="border table-cell-border p-1 w-10 no-print text-[10px]">Ação</th>
+          <button onclick="changeCalendarMonth(1)" class="px-2 py-0.5 bg-white/40 dark:bg-slate-700/60 hover:bg-white/80 dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-sm" title="Próximo Mês">
+            <span class="hidden sm:inline text-[11px]">Próximo</span> ▶
+          </button>
+        </div>
+              </th>
+
+              <th rowspan="3" class="border table-cell-border p-1 w-10 no-print text-[10px]">Ação</th>
             </tr>
 
-            <!-- Sublinha: Os 7 Dias da Semana (Seg a Dom) renderizados dinamicamente -->
-            <tr class="table-header-sub border-b text-center font-bold text-[10px]" id="days-header-row">
-              <!-- Renderizado via renderDaysHeader() -->
-            </tr>
+            <tr class="table-header-sub border-b text-center font-bold text-[10px]" id="periods-header-row">
+          <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
+            Dia 1 - 7
+          </th>
+        
+          <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
+            Dia 8 - 14
+          </th>
+        
+          <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
+            Dia 15 - 21
+          </th>
+        
+          <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
+            Dia 22 - 28
+          </th>
+        
+          <th colspan="3" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
+            Dia 29 - 31
+          </th>
+        </tr>
+
+            <tr class="table-header-sub border-b text-center text-[10px] font-bold" id="days-header-row">
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
+            <span class="text-xs font-bold block leading-tight">1</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">2</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">3</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
+            <span class="text-[10px] block opacity-80 leading-tight">D</span>
+            <span class="text-xs font-bold block leading-tight">4</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">5</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">T</span>
+            <span class="text-xs font-bold block leading-tight">6</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
+            <span class="text-xs font-bold block leading-tight">7</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
+            <span class="text-xs font-bold block leading-tight">8</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1 bg-sky-500/20 text-sky-600 font-extrabold border-sky-400 " title=" - Hoje">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">9</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">10</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
+            <span class="text-[10px] block opacity-80 leading-tight">D</span>
+            <span class="text-xs font-bold block leading-tight">11</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">12</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">T</span>
+            <span class="text-xs font-bold block leading-tight">13</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
+            <span class="text-xs font-bold block leading-tight">14</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
+            <span class="text-xs font-bold block leading-tight">15</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">16</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">17</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
+            <span class="text-[10px] block opacity-80 leading-tight">D</span>
+            <span class="text-xs font-bold block leading-tight">18</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">19</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">T</span>
+            <span class="text-xs font-bold block leading-tight">20</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
+            <span class="text-xs font-bold block leading-tight">21</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
+            <span class="text-xs font-bold block leading-tight">22</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">23</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">24</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
+            <span class="text-[10px] block opacity-80 leading-tight">D</span>
+            <span class="text-xs font-bold block leading-tight">25</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">26</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">T</span>
+            <span class="text-xs font-bold block leading-tight">27</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
+            <span class="text-xs font-bold block leading-tight">28</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
+            <span class="text-xs font-bold block leading-tight">29</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  " title=" ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">30</span>
+          </th>
+        
+          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
+            <span class="text-[10px] block opacity-80 leading-tight">S</span>
+            <span class="text-xs font-bold block leading-tight">31</span>
+          </th>
+        </tr>
           </thead>
           <tbody id="sheet-body" class="divide-y table-cell-border">
           <tr class="table-header font-bold border-t-2 border-b table-cell-border">
@@ -16908,206 +17012,36 @@
   <!-- ============================================================= -->
   <div id="tab-content-faltas" class="max-w-[1500px] mx-auto space-y-5 hidden">
     
-    <!-- Top Header do Módulo de Faltas & Produção -->
+    <!-- Top Header do Módulo de Faltas -->
     <div class="card-bg border rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2.5">
-          <div class="p-2.5 bg-emerald-500/10 text-emerald-600 rounded-xl text-xl font-bold flex items-center justify-center">
-            💰
+          <div class="p-2.5 bg-rose-500/10 text-rose-600 rounded-xl text-xl font-bold flex items-center justify-center">
+            📋
           </div>
           <div>
             <h2 class="font-extrabold text-lg tracking-tight flex items-center gap-2">
-              <span>Controle de Faltas, Presença &amp; Produção por Serviço</span>
-              <span class="text-xs px-2 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">Módulo Operacional</span>
+              <span>Controle de Faltas &amp; Frequência dos Executores</span>
+              <span class="text-xs px-2 py-0.5 rounded-full font-bold bg-rose-500/15 text-rose-600 border border-rose-500/30">Módulo Operacional</span>
             </h2>
-            <p class="text-xs opacity-70 mt-0.5">Acompanhamento de metas de produção por serviço, quantias em dinheiro (R$), datas de início/fim, cumprimento e assiduidade diária</p>
+            <p class="text-xs opacity-70 mt-0.5">Acompanhamento diário de presença, faltas justificadas/injustificadas, atestados médicos e impacto no canteiro</p>
           </div>
         </div>
       </div>
 
       <div class="flex items-center gap-2 flex-wrap">
-        <button onclick="openLancarProducaoModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow hover:scale-105 cursor-pointer">
-          <span>💰</span>
-          <span>+ Nova Produção por Serviço</span>
-        </button>
-
-        <button onclick="openLancarFaltaModal()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow hover:scale-105 cursor-pointer">
+        <button onclick="openLancarFaltaModal()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow hover:scale-105">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
           <span>+ Lançar Falta / Ocorrência</span>
         </button>
 
-        <button onclick="triggerPdfExport('faltas')" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow hover:scale-105 cursor-pointer">
+        <button onclick="triggerPdfExport('faltas')" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow hover:scale-105">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-          <span>Imprimir / PDF</span>
+          <span>Imprimir / PDF de Faltas</span>
         </button>
       </div>
     </div>
 
-    <!-- Barra de Sub-Navegação Interna -->
-    <div class="card-bg border rounded-2xl p-2 shadow-sm flex items-center justify-between flex-wrap gap-2 no-print">
-      <div class="flex items-center gap-1.5 flex-wrap">
-        <button id="subtab-btn-producao" onclick="switchFaltasSubView('producao')" class="px-3 py-1.5 rounded-xl font-black text-xs transition card-bg text-emerald-600 shadow-sm border border-emerald-500/30 flex items-center gap-1.5 cursor-pointer">
-          <span>💰</span> Produção por Serviço &amp; Metas
-          <span id="badge-count-producao" class="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-extrabold">0</span>
-        </button>
-        <button id="subtab-btn-chamada" onclick="switchFaltasSubView('chamada')" class="px-3 py-1.5 rounded-xl font-bold text-xs transition opacity-70 hover:opacity-100 flex items-center gap-1.5 cursor-pointer">
-          <span>📅</span> Diário de Presença (Chamada)
-        </button>
-        <button id="subtab-btn-faltas" onclick="switchFaltasSubView('faltas')" class="px-3 py-1.5 rounded-xl font-bold text-xs transition opacity-70 hover:opacity-100 flex items-center gap-1.5 cursor-pointer">
-          <span>📋</span> Ocorrências &amp; Faltas
-          <span id="badge-count-faltas" class="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-500/10 text-rose-600 font-extrabold">0</span>
-        </button>
-        <button id="subtab-btn-todos" onclick="switchFaltasSubView('todos')" class="px-3 py-1.5 rounded-xl font-bold text-xs transition opacity-70 hover:opacity-100 flex items-center gap-1.5 cursor-pointer">
-          <span>👁️</span> Visão Geral Completa
-        </button>
-      </div>
-      <div class="text-[11px] opacity-70 pr-2">
-        <span class="font-bold text-emerald-600" id="subtab-summary-hint">Gerenciamento de Empreitas &amp; Produtividade</span>
-      </div>
-    </div>
-
-    <!-- ============================================================= -->
-    <!-- BLOCO 1: SISTEMA DE PRODUÇÃO POR SERVIÇO & QUANTIA DE DINHEIRO -->
-    <!-- ============================================================= -->
-    <div id="sec-producao-servico" class="space-y-4">
-      
-      <!-- Top Card de Produção & KPIs de Dinheiro e Metas -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-        <!-- Card 1: Total em Dinheiro Acordado -->
-        <div class="card-bg border rounded-2xl p-4 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold opacity-70 uppercase tracking-wider">Total em Produção</span>
-            <span class="p-1.5 bg-emerald-500/10 text-emerald-600 rounded-lg text-xs font-bold">R$ Total</span>
-          </div>
-          <div class="mt-2 flex items-baseline gap-1.5">
-            <span class="text-xs font-bold opacity-60">R$</span>
-            <span id="kpi-prod-total-valor" class="text-2xl md:text-3xl font-black text-emerald-600">0,00</span>
-          </div>
-          <div class="text-[10px] opacity-60 mt-3 pt-2 border-t table-cell-border flex items-center justify-between">
-            <span id="kpi-prod-total-count">0 serviço(s)</span>
-            <span class="font-bold text-sky-600" id="kpi-prod-taxa">0% cumpridas</span>
-          </div>
-        </div>
-
-        <!-- Card 2: Produções Cumpridas (Dinheiro Realizado) -->
-        <div class="card-bg border rounded-2xl p-4 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold opacity-70 uppercase tracking-wider">Cumpridas</span>
-            <span class="p-1.5 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-bold flex items-center gap-1">
-              <span>✔</span> Cumpridas
-            </span>
-          </div>
-          <div class="mt-2 flex items-baseline gap-1.5">
-            <span class="text-xs font-bold opacity-60">R$</span>
-            <span id="kpi-prod-cumpridas-valor" class="text-2xl md:text-3xl font-black text-emerald-600">0,00</span>
-          </div>
-          <div class="text-[10px] opacity-60 mt-3 pt-2 border-t table-cell-border">
-            <span id="kpi-prod-cumpridas-count">0 serviço(s) finalizado(s)</span>
-          </div>
-        </div>
-
-        <!-- Card 3: Produções Em Andamento -->
-        <div class="card-bg border rounded-2xl p-4 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold opacity-70 uppercase tracking-wider">Em Andamento</span>
-            <span class="p-1.5 bg-amber-500/15 text-amber-700 dark:text-amber-300 rounded-lg text-xs font-bold flex items-center gap-1">
-              <span>⏳</span> Executando
-            </span>
-          </div>
-          <div class="mt-2 flex items-baseline gap-1.5">
-            <span class="text-xs font-bold opacity-60">R$</span>
-            <span id="kpi-prod-andamento-valor" class="text-2xl md:text-3xl font-black text-amber-600">0,00</span>
-          </div>
-          <div class="text-[10px] opacity-60 mt-3 pt-2 border-t table-cell-border">
-            <span id="kpi-prod-andamento-count">0 serviço(s) no prazo</span>
-          </div>
-        </div>
-
-        <!-- Card 4: Produções Não Cumpridas -->
-        <div class="card-bg border rounded-2xl p-4 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold opacity-70 uppercase tracking-wider">Não Cumpridas</span>
-            <span class="p-1.5 bg-rose-500/15 text-rose-700 dark:text-rose-300 rounded-lg text-xs font-bold flex items-center gap-1">
-              <span>❌</span> Pendente
-            </span>
-          </div>
-          <div class="mt-2 flex items-baseline gap-1.5">
-            <span class="text-xs font-bold opacity-60">R$</span>
-            <span id="kpi-prod-naocumpridas-valor" class="text-2xl md:text-3xl font-black text-rose-600">0,00</span>
-          </div>
-          <div class="text-[10px] opacity-60 mt-3 pt-2 border-t table-cell-border">
-            <span id="kpi-prod-naocumpridas-count">0 serviço(s) não concluído(s)</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tabela de Produção por Serviço -->
-      <div class="card-bg border rounded-2xl p-4 shadow-sm space-y-4">
-        <div class="flex flex-wrap items-center justify-between border-b table-cell-border pb-3 gap-3">
-          <div>
-            <h3 class="font-bold text-sm flex items-center gap-2">
-              <span>💰</span> Lista de Produção por Serviço, Prazos &amp; Quantias
-            </h3>
-            <p class="text-[11px] opacity-60">Controle de tarefas de produção, valores em dinheiro (R$), datas de início e fim, e indicação se a meta foi cumprida ou não</p>
-          </div>
-
-          <!-- Filtros de Produção -->
-          <div class="flex items-center gap-2 flex-wrap">
-            <!-- Busca -->
-            <div class="relative">
-              <input type="text" id="producao-search-input" oninput="renderProducaoTable()" placeholder="Buscar serviço, executor ou frente..." class="border table-cell-border rounded-lg pl-8 pr-3 py-1 text-xs focus:outline-none focus:border-emerald-500 w-56 card-bg">
-              <svg class="w-3.5 h-3.5 absolute left-2.5 top-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-
-            <!-- Filtro Colaborador -->
-            <select id="producao-filter-worker" onchange="renderProducaoTable()" class="border table-cell-border rounded-lg px-2.5 py-1 text-xs focus:outline-none focus:border-emerald-500 card-bg font-semibold">
-              <option value="todos">Todos os Executores</option>
-            </select>
-
-            <!-- Filtro Status de Cumprimento -->
-            <div class="flex items-center sub-box p-1 rounded-lg border gap-1">
-              <button onclick="setProducaoFilter('todos')" id="prod-flt-btn-todos" class="px-2 py-0.5 rounded text-[11px] font-bold border card-bg text-emerald-600 shadow-sm cursor-pointer">Todos</button>
-              <button onclick="setProducaoFilter('cumprida')" id="prod-flt-btn-cumprida" class="px-2 py-0.5 rounded text-[11px] font-semibold opacity-70 hover:opacity-100 cursor-pointer">✔ Cumprida</button>
-              <button onclick="setProducaoFilter('em_andamento')" id="prod-flt-btn-em_andamento" class="px-2 py-0.5 rounded text-[11px] font-semibold opacity-70 hover:opacity-100 cursor-pointer">⏳ Em Andamento</button>
-              <button onclick="setProducaoFilter('nao_cumprida')" id="prod-flt-btn-nao_cumprida" class="px-2 py-0.5 rounded text-[11px] font-semibold opacity-70 hover:opacity-100 cursor-pointer">❌ Não Cumprida</button>
-            </div>
-
-            <button onclick="openLancarProducaoModal()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition flex items-center gap-1 shadow-sm cursor-pointer">
-              <span>+ Adicionar</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Tabela Responsiva de Produção -->
-        <div class="overflow-x-auto max-h-[550px] overflow-y-auto">
-          <table class="w-full border-collapse text-left text-xs">
-            <thead class="table-header border-b sticky top-0 z-10 font-bold">
-              <tr>
-                <th class="p-2.5 pl-3 w-44">Colaborador / Cargo</th>
-                <th class="p-2.5 min-w-[220px]">Serviço / Atividade de Produção</th>
-                <th class="p-2.5 w-36">Frente de Obra</th>
-                <th class="p-2.5 w-44 text-center">Período (Início ➔ Fim)</th>
-                <th class="p-2.5 w-28 text-center">Duração</th>
-                <th class="p-2.5 w-32 text-right">Quantia (R$)</th>
-                <th class="p-2.5 w-36 text-center">Cumprida?</th>
-                <th class="p-2.5 text-center w-24 no-print">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="producao-table-body" class="divide-y table-cell-border">
-              <!-- Linhas renderizadas dinamicamente via JS -->
-            </tbody>
-            <tfoot id="producao-table-footer" class="bg-slate-100 dark:bg-slate-800/80 font-bold border-t-2 border-slate-300 dark:border-slate-700">
-              <!-- Totalizadores calculados via JS -->
-            </tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================= -->
-    <!-- BLOCO 2: DIÁRIO DE PRESENÇA & HISTÓRICO DE OCORRÊNCIAS         -->
-    <!-- ============================================================= -->
-    <div id="sec-presenca-ocorrencias" class="space-y-5">
     <!-- 1. Linha de Métricas & KPIs de Frequência -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
       <!-- Card 1: Taxa de Assiduidade -->
@@ -17253,7 +17187,6 @@
           </tbody>
         </table>
       </div>
-    </div>
     </div>
 
   </div>
@@ -18439,92 +18372,6 @@
     </div>
   </div>
 
-  <!-- MODAL: LANÇAR / EDITAR PRODUÇÃO POR SERVIÇO -->
-  <div id="modal-lancar-producao" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-    <div class="card-bg border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b table-cell-border pb-3">
-        <div class="flex items-center gap-2">
-          <span class="p-2 bg-emerald-500/10 text-emerald-600 rounded-xl text-base font-bold">💰</span>
-          <div>
-            <h3 class="font-bold text-base" id="modal-producao-title">Lançar Produção por Serviço</h3>
-            <p class="text-[11px] opacity-70">Defina o serviço, quantia em dinheiro, datas de início/fim e cumprimento</p>
-          </div>
-        </div>
-        <button type="button" onclick="closeLancarProducaoModal()" class="opacity-60 hover:opacity-100 text-xl font-bold cursor-pointer">×</button>
-      </div>
-
-      <form onsubmit="handleSaveProducaoForm(event)" class="space-y-3.5">
-        <input type="hidden" id="producao-form-id" value="">
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold opacity-80 mb-1">Colaborador / Executor *</label>
-            <select id="producao-input-worker" required class="w-full border table-cell-border rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-500 card-bg font-semibold">
-              <!-- Preenchido via JS com lista de projectOwners -->
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold opacity-80 mb-1">Frente de Serviço *</label>
-            <select id="producao-input-frente" required class="w-full border table-cell-border rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-500 card-bg font-semibold">
-              <!-- Preenchido via JS com frentes do projeto -->
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold opacity-80 mb-1">Serviço / Atividade de Produção *</label>
-          <input type="text" id="producao-input-servico" required placeholder="Ex: Assentamento de blocos de concreto 14x19x39 - 180 m²" class="w-full border table-cell-border rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-500 card-bg font-semibold">
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold opacity-80 mb-1">Data de Início *</label>
-            <input type="date" id="producao-input-datainicio" required class="w-full border table-cell-border rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-500 card-bg font-semibold">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold opacity-80 mb-1">Data de Fim (Previsão ou Entrega) *</label>
-            <input type="date" id="producao-input-datafim" required class="w-full border table-cell-border rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-500 card-bg font-semibold">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold opacity-80 mb-1">Quantia de Dinheiro (R$) *</label>
-            <div class="relative">
-              <span class="absolute left-2.5 top-2 text-xs font-bold opacity-60">R$</span>
-              <input type="number" step="0.01" min="0" id="producao-input-valor" required placeholder="0,00" class="w-full border table-cell-border rounded-lg p-2 pl-9 text-xs focus:outline-none focus:border-emerald-500 card-bg font-black text-emerald-600">
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold opacity-80 mb-1">Quantidade / Meta (Opcional)</label>
-            <input type="text" id="producao-input-qtd" placeholder="Ex: 180 m², 25 vigas, 40 m³..." class="w-full border table-cell-border rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-500 card-bg">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold opacity-80 mb-1">Situação de Cumprimento *</label>
-          <select id="producao-input-status" required class="w-full border table-cell-border rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-500 card-bg font-bold">
-            <option value="em_andamento" selected>⏳ Em Andamento (Em execução dentro do prazo)</option>
-            <option value="cumprida">✅ Cumprida (Serviço finalizado e meta atingida)</option>
-            <option value="nao_cumprida">❌ Não Cumprida (Meta não atingida / Cancelada)</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold opacity-80 mb-1">Observações / Critérios de Medição</label>
-          <textarea id="producao-input-obs" rows="2" placeholder="Observações de qualidade, conferência do encarregado, medição da obra..." class="w-full border table-cell-border rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-500 card-bg"></textarea>
-        </div>
-
-        <div class="pt-3 border-t table-cell-border flex items-center justify-end gap-2">
-          <button type="button" onclick="closeLancarProducaoModal()" class="px-3.5 py-1.5 opacity-70 hover:opacity-100 rounded-lg text-xs font-semibold cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs shadow flex items-center gap-1.5 hover:scale-105 transition cursor-pointer">
-            <span>💾</span> Salvar Produção
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script>
     const STORAGE_DATA_KEY = 'obra_natura_light_data_v2';
     const STORAGE_CONFIG_KEY = 'obra_natura_light_config_v2';
@@ -18545,93 +18392,6 @@
     ];
 
     let faltasItems = [];
-    const STORAGE_PRODUCAO_KEY = 'obra_natura_producao_v1';
-
-    const INITIAL_PRODUCAO = [
-      {
-        id: 'prod_1',
-        workerName: 'Miro',
-        cargo: 'Pedreiro',
-        servico: 'Alvenaria com Blocos de Concreto 14x19x39 - Paredes DML',
-        frente: 'DML e Resíduos',
-        valor: 1850.00,
-        qtdMeta: '180 m²',
-        dataInicio: '2026-10-05',
-        dataFim: '2026-10-14',
-        status: 'cumprida',
-        observacoes: 'Serviço concluído com alinhamento e prumo aprovados pela engenharia.'
-      },
-      {
-        id: 'prod_2',
-        workerName: 'João',
-        cargo: 'Pedreiro',
-        servico: 'Execução de Formas e Concretagem de Vigas Baldrames V1 a V12',
-        frente: 'Galpão NINA - Estrutural',
-        valor: 2400.00,
-        qtdMeta: '33,5 m³',
-        dataInicio: '2026-10-10',
-        dataFim: '2026-10-22',
-        status: 'em_andamento',
-        observacoes: 'Formas travadas e armação posicionada. Em andamento dentro do prazo.'
-      },
-      {
-        id: 'prod_3',
-        workerName: 'Marcelo',
-        cargo: 'Carpinteiro',
-        servico: 'Confecção de Painéis e Formas Resinadas para Sapatas Isoladas',
-        frente: 'Galpão NINA - Estrutural',
-        valor: 1450.00,
-        qtdMeta: '195 m²',
-        dataInicio: '2026-10-08',
-        dataFim: '2026-10-16',
-        status: 'cumprida',
-        observacoes: 'Desmoldante aplicado e formas conferidas com esquadro.'
-      },
-      {
-        id: 'prod_4',
-        workerName: 'Walber',
-        cargo: 'Serralheiro',
-        servico: 'Corte, Furação e Solda de Perfis U 150x50 para Passarela e Portões',
-        frente: 'ADM/Passarela',
-        valor: 1950.00,
-        qtdMeta: '181 barras',
-        dataInicio: '2026-10-12',
-        dataFim: '2026-10-25',
-        status: 'em_andamento',
-        observacoes: 'Montagem estrutural em andamento no canteiro.'
-      },
-      {
-        id: 'prod_5',
-        workerName: 'Junior',
-        cargo: 'Pintor',
-        servico: 'Pintura Anticorrosiva e Esmalte Sintético na Estrutura Metálica',
-        frente: 'ADM/Passarela',
-        valor: 850.00,
-        qtdMeta: '120 m²',
-        dataInicio: '2026-10-18',
-        dataFim: '2026-10-28',
-        status: 'em_andamento',
-        observacoes: 'Primeira demão aplicada nas peças prontas da passarela.'
-      },
-      {
-        id: 'prod_6',
-        workerName: 'Topógrafo',
-        cargo: 'Topógrafo',
-        servico: 'Locação Topográfica de Eixos, Sapatas e Nivelamento Geral de Solo',
-        frente: 'Topografia',
-        valor: 1200.00,
-        qtdMeta: '1 cj',
-        dataInicio: '2026-10-02',
-        dataFim: '2026-10-06',
-        status: 'cumprida',
-        observacoes: 'Marcações de piquetes e cotas de nível aprovadas sem desvios.'
-      }
-    ];
-
-    let producaoItems = [];
-    let currentProducaoFilter = 'todos';
-    let currentFaltasSubView = 'producao';
-
 
     const INITIAL_FINANCEIRO = [
       { id: 'fn_mendes_515', data: '01/10/2026', descricao: 'Blocos concreto 14x19x39 (800 un) e Canaletas (170 un) - Or. 515', categoria: 'Materiais', responsavel: 'Mendes Pr-Moldados', valor: 4781.00, situacao: 'Previsto' },
@@ -19293,9 +19053,6 @@
       const savedFaltas = localStorage.getItem(STORAGE_FALTAS_KEY);
       faltasItems = savedFaltas ? JSON.parse(savedFaltas) : JSON.parse(JSON.stringify(INITIAL_FALTAS));
 
-      const savedProducao = localStorage.getItem(STORAGE_PRODUCAO_KEY);
-      producaoItems = savedProducao ? JSON.parse(savedProducao) : JSON.parse(JSON.stringify(INITIAL_PRODUCAO));
-
       loadDiarioData();
 
       const SCHEMA_TARGET = 'v4_cia_zerado_outubro';
@@ -19345,12 +19102,12 @@
       projectData = [...activeP, ...archP];
 
       initCalendarState();
+      syncAllTasksAutoDays(); // Inicializa as bolinhas amarelas de acordo com as datas de cada execução
       // syncAllTasksAutoDays() removido do carregamento inicial para preservar
       // os dias configurados manualmente no cronograma (células verdes/amarelas).
       // A sincronização automática ainda ocorre ao trocar de mês (onMonthUpdated).
 
       applyConfigToHeader();
-      updateExecutiveWeekUI();
       renderDaysHeader();
       renderSheetBody();
       updateKPIs();
@@ -20380,14 +20137,6 @@
     // Frente 1: Central de Resíduos, DML e Calçada
     // Frente 2: ADM / Passarela (Fundações)
     // ============================================================
-    function saveData() {
-      if (typeof saveAllData === 'function') {
-        saveAllData(true);
-      } else if (typeof projectData !== 'undefined') {
-        localStorage.setItem(STORAGE_DATA_KEY, JSON.stringify(projectData));
-      }
-    }
-
     function mergeCronogramaOutubro() {
       const FLAG = 'obra_natura_cronograma_s4_v2026_10_20';
       if (localStorage.getItem(FLAG)) return;
@@ -22605,8 +22354,7 @@
     }
 
     function updateMateriaisKPIs() {
-      const elDepCount = document.getElementById('mat-kpi-deposito-count') || document.getElementById('deposito-items-count');
-      if (elDepCount) elDepCount.innerText = depositoItems.length;
+      document.getElementById('mat-kpi-deposito-count').innerText = depositoItems.length;
       let okCount = 0, alertCount = 0, defectCount = 0, reporCount = 0;
       depositoItems.forEach(item => {
         const s = (item.situacao || '').toLowerCase();
@@ -22615,10 +22363,8 @@
         else if (s.includes('bateria')) alertCount++;
         else okCount++;
       });
-      const elOk = document.getElementById('mat-kpi-ok-count');
-      if (elOk) elOk.innerText = okCount;
-      const elAlert = document.getElementById('mat-kpi-alert-count');
-      if (elAlert) elAlert.innerText = alertCount;
+      document.getElementById('mat-kpi-ok-count').innerText = okCount;
+      document.getElementById('mat-kpi-alert-count').innerText = alertCount;
 
       // Contadores de pendências de compras por tipo
       let pendMat = 0, pendFerr = 0, pendEpis = 0, pendLimp = 0, pendEscr = 0, pendTotal = 0;
@@ -23074,12 +22820,9 @@
       { num: 11, label: 'S11', dates: '07/12 - 13/12', start: new Date(2026, 11, 7), end: new Date(2026, 11, 13), isCurrent: false, desc: 'Entrega Final ADM & Passarela (10/12)' }
     ];
 
-    let cronogramaTimelineMode = 'semanal';
+    let cronogramaTimelineMode = localStorage.getItem('obra_natura_cronograma_timeline_mode') || 'mensal';
 
     function setCronogramaTimelineMode(mode) {
-      cronogramaTimelineMode = 'semanal';
-      renderSheetBody();
-      return;
       cronogramaTimelineMode = mode;
       localStorage.setItem('obra_natura_cronograma_timeline_mode', mode);
       
@@ -23106,7 +22849,22 @@
 
     function setTaskProgressQuick(sIdx, tIdx, val) {
       if (!projectData[sIdx] || !projectData[sIdx].tasks[tIdx]) return;
-      projectData[sIdx].tasks[tIdx].progress = parseInt(val, 10);
+      const task = projectData[sIdx].tasks[tIdx];
+      const targetPct = parseInt(val, 10);
+      task.progress = targetPct;
+
+      // Sincroniza as bolinhas com a porcentagem clicada
+      if (task.days) {
+        const keys = Object.keys(task.days);
+        if (keys.length > 0) {
+          keys.sort((a, b) => parseInt(a.replace('d', ''), 10) - parseInt(b.replace('d', ''), 10));
+          const greenCount = Math.round(keys.length * (targetPct / 100));
+          keys.forEach((k, idx) => {
+            task.days[k] = idx < greenCount ? 'green' : 'yellow';
+          });
+        }
+      }
+
       saveData();
       renderSheetBody();
       updateKPIs();
@@ -23263,48 +23021,6 @@
       }
     }
 
-    
-    function getSectionGanttBar(sec) {
-      if (!sec.tasks || sec.tasks.length === 0) return { hasDates: false, avgProgress: 0 };
-      let minStart = null;
-      let maxEnd = null;
-      let totalProg = 0;
-      sec.tasks.forEach(t => {
-        totalProg += (Number(t.progress) || 0);
-        const s = parseSingleDate(t.start, 2026, 9);
-        const e = parseSingleDate(t.end, 2026, 9);
-        if (s) {
-          if (!minStart || s < minStart) minStart = s;
-        }
-        if (e) {
-          if (!maxEnd || e > maxEnd) maxEnd = e;
-        }
-      });
-      const avg = Math.round(totalProg / sec.tasks.length);
-      if (!minStart || !maxEnd) return { hasDates: false, avgProgress: avg };
-      
-      const pStart = new Date(2026, 8, 28);
-      const pEnd = new Date(2026, 11, 13, 23, 59, 59);
-      const totalMs = pEnd - pStart;
-      
-      const clampedStart = Math.max(pStart.getTime(), minStart.getTime());
-      const clampedEnd = Math.min(pEnd.getTime(), maxEnd.getTime());
-      if (clampedEnd < pStart.getTime() || clampedStart > pEnd.getTime()) {
-        return { hasDates: false, avgProgress: avg };
-      }
-      const leftPct = Math.max(0, Math.min(100, ((clampedStart - pStart.getTime()) / totalMs) * 100));
-      const widthPct = Math.max(3.5, Math.min(100 - leftPct, ((clampedEnd - clampedStart) / totalMs) * 100));
-      
-      return {
-        hasDates: true,
-        leftPct: parseFloat(leftPct.toFixed(1)),
-        widthPct: parseFloat(widthPct.toFixed(1)),
-        avgProgress: avg,
-        startDisplay: minStart.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        endDisplay: maxEnd.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
-      };
-    }
-
     function getTaskGanttBar(task) {
       const pStart = new Date(2026, 8, 28); // 28/09/2026
       const pEnd = new Date(2026, 11, 13, 23, 59, 59); // 13/12/2026
@@ -23372,17 +23088,24 @@
       projectConfig.monthTitle = MONTH_NAMES[month];
       projectConfig.days = days;
 
-      // Gera os períodos das semanas do mês
+      // Gera os períodos em blocos de DUAS SEMANAS (conforme solicitado)
       const periods = [];
-      let day = 1;
-      while (day <= totalDays) {
-        const start = day;
-        const end = Math.min(day + 6, totalDays);
+      // Quinzena 1 / Semanas 1 e 2: Dias 1 a 14 (14 dias = 2 semanas)
+      periods.push({
+        label: 'Semanas 1 & 2 • 2 Semanas (Dias 01 a 14)',
+        span: 14
+      });
+      // Quinzena 2 / Semanas 3 e 4: Dias 15 a 28 (14 dias = 2 semanas)
+      periods.push({
+        label: 'Semanas 3 & 4 • 2 Semanas (Dias 15 a 28)',
+        span: 14
+      });
+      // Fechamento do Mês (Semana 5): Dias 29 até totalDays
+      if (totalDays > 28) {
         periods.push({
-          label: `Dia ${start} - ${end}`,
-          span: (end - start + 1)
+          label: `Semana 5 • Fechamento (Dias 29 a ${totalDays})`,
+          span: (totalDays - 28)
         });
-        day += 7;
       }
       projectConfig.periods = periods;
     }
@@ -23467,171 +23190,38 @@
       }
     }
 
-    
-    // =========================================================================
-    // CONTROLE DINÂMICO DO CRONOGRAMA SEMANAL (7 DIAS DA SEMANA: SEG A DOM)
-    // =========================================================================
-    const WEEKDAY_NAMES_PT = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
-    const WEEKDAY_SHORT_PT = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-
-    function getCurrentWeekIndex() {
-      const today = new Date();
-      const tTime = today.getTime();
-      for (let i = 0; i < OBRA_SEMANAS.length; i++) {
-        const w = OBRA_SEMANAS[i];
-        const wStart = new Date(w.start.getFullYear(), w.start.getMonth(), w.start.getDate(), 0, 0, 0);
-        const wEnd = new Date(w.end.getFullYear(), w.end.getMonth(), w.end.getDate(), 23, 59, 59);
-        if (tTime >= wStart.getTime() && tTime <= wEnd.getTime()) {
-          return i;
-        }
-      }
-      if (tTime < OBRA_SEMANAS[0].start.getTime()) return 0;
-      if (tTime > OBRA_SEMANAS[OBRA_SEMANAS.length - 1].end.getTime()) return OBRA_SEMANAS.length - 1;
-      return 3; // Padrão S4
-    }
-
-    let activeWeekIndex = getCurrentWeekIndex();
-
-    function getActiveWeekDays(weekIdx) {
-      if (weekIdx === undefined || weekIdx === null) weekIdx = activeWeekIndex;
-      const w = OBRA_SEMANAS[weekIdx] || OBRA_SEMANAS[3];
-      const today = new Date();
-      const days = [];
-
-      for (let i = 0; i < 7; i++) {
-        const dt = new Date(w.start.getFullYear(), w.start.getMonth(), w.start.getDate() + i);
-        const isToday = (today.getFullYear() === dt.getFullYear() && today.getMonth() === dt.getMonth() && today.getDate() === dt.getDate());
-        const isWeekend = (i === 5 || i === 6);
-        const dayNum = dt.getDate();
-        const monthNum = dt.getMonth() + 1;
-        const yearNum = dt.getFullYear();
-        const dayKey = `d_${yearNum}_${String(monthNum).padStart(2,'0')}_${String(dayNum).padStart(2,'0')}`;
-
-        days.push({
-          weekday: WEEKDAY_SHORT_PT[i],
-          weekdayFull: WEEKDAY_NAMES_PT[i],
-          dayNum: dayNum,
-          monthNum: monthNum,
-          dateFormatted: `${String(dayNum).padStart(2,'0')}/${String(monthNum).padStart(2,'0')}`,
-          fullDateStr: `${String(dayNum).padStart(2,'0')}/${String(monthNum).padStart(2,'0')}/${yearNum}`,
-          dateObj: dt,
-          isToday: isToday,
-          isWeekend: isWeekend,
-          dayKey: dayKey
-        });
-      }
-      return days;
-    }
-
-    function changeActiveWeek(delta) {
-      activeWeekIndex = Math.max(0, Math.min(OBRA_SEMANAS.length - 1, activeWeekIndex + delta));
-      updateExecutiveWeekUI();
-      renderDaysHeader();
-      renderSheetBody();
-    }
-
-    function onWeekSelectChange(val) {
-      activeWeekIndex = parseInt(val, 10);
-      updateExecutiveWeekUI();
-      renderDaysHeader();
-      renderSheetBody();
-    }
-
-    function goToCurrentWeek() {
-      activeWeekIndex = getCurrentWeekIndex();
-      updateExecutiveWeekUI();
-      renderDaysHeader();
-      renderSheetBody();
-    }
-
-    function updateExecutiveWeekUI() {
-      const w = OBRA_SEMANAS[activeWeekIndex];
-      if (!w) return;
-
-      const numEl = document.getElementById('exec-week-badge-num');
-      if (numEl) numEl.innerText = String(w.num).padStart(2, '0');
-
-      const titleEl = document.getElementById('header-week-title');
-      if (titleEl) titleEl.innerText = `${w.label} (${w.dates}/2026)`;
-
-      const subTitleEl = document.getElementById('exec-panel-subtitle');
-      if (subTitleEl) {
-        subTitleEl.innerHTML = `Semana Ativa: <strong>${w.label} (${w.dates}/2026)</strong> • ${escapeHtml(w.desc)} • Previsão Resíduos: <strong>13/11 (S7)</strong> • Metálica: <strong>10/12 (S11)</strong>`;
-      }
-
-      const todayBadge = document.getElementById('exec-panel-today-badge');
-      if (todayBadge) {
-        const today = new Date();
-        const wdIdx = (today.getDay() + 6) % 7; // 0=Seg, 6=Dom
-        const wdName = WEEKDAY_NAMES_PT[wdIdx] || 'Hoje';
-        const isCurrentActive = (activeWeekIndex === getCurrentWeekIndex());
-        todayBadge.innerText = isCurrentActive ? `Hoje: ${wdName} (Semana Atual 📍)` : `Visualizando ${w.label}`;
-        todayBadge.className = isCurrentActive 
-          ? "px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs animate-pulse" 
-          : "px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-600 text-white shadow-xs";
-      }
-
-      // Popular o selector
-      const selector = document.getElementById('quick-week-selector');
-      if (selector) {
-        selector.innerHTML = OBRA_SEMANAS.map((item, idx) => {
-          const isCur = (idx === getCurrentWeekIndex());
-          return `<option value="${idx}" ${idx === activeWeekIndex ? 'selected' : ''}>${item.label} (${item.dates}) ${isCur ? '• HOJE 📍' : ''}</option>`;
-        }).join('');
-      }
-    }
-
-    function cycleWeeklyDayStatus(sIdx, tIdx, dayKey, dayNum) {
-      if (!projectData[sIdx] || !projectData[sIdx].tasks[tIdx]) return;
-      const task = projectData[sIdx].tasks[tIdx];
-      if (!task.days) task.days = {};
-
-      const current = task.days[dayKey] || task.days['d' + dayNum] || 'empty';
-      let next = 'yellow';
-      if (current === 'yellow') next = 'green';
-      else if (current === 'green') next = 'empty';
-
-      if (next === 'empty') {
-        delete task.days[dayKey];
-        delete task.days['d' + dayNum];
-      } else {
-        task.days[dayKey] = next;
-        task.days['d' + dayNum] = next;
-      }
-
-      if (autoCalcProgress && typeof recalculateTaskProgressFromDays === 'function') {
-        task.progress = recalculateTaskProgressFromDays(task);
-      }
-
-      saveData();
-      renderSheetBody();
-      updateKPIs();
-      renderDashboard();
-    }
-
     function renderDaysHeader() {
       const tr = document.getElementById('days-header-row');
       if (!tr) return;
 
-      const days = getActiveWeekDays(activeWeekIndex);
-
-      tr.innerHTML = days.map(d => {
-        const isTodayCls = d.isToday
-          ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-400 font-black'
-          : d.isWeekend
-          ? 'bg-slate-100/80 dark:bg-slate-800/60 text-slate-500 font-semibold'
-          : 'bg-slate-50 dark:bg-slate-900/60 text-slate-700 dark:text-slate-200 font-bold';
-
-        return `
-          <th class="border table-cell-border py-1.5 px-1 text-center w-14 min-w-[52px] ${isTodayCls}" title="${d.weekdayFull}, ${d.fullDateStr} ${d.isToday ? '(HOJE)' : ''}">
-            <div class="flex flex-col items-center justify-center leading-tight">
-              <span class="text-[11px] font-black uppercase tracking-wider">${d.weekday}</span>
-              <span class="text-xs font-black mt-0.5">${d.dateFormatted}</span>
-              ${d.isToday ? '<span class="text-[7.5px] uppercase tracking-tighter bg-rose-500 text-white font-black px-1 rounded-xs mt-0.5 animate-pulse">HOJE 📍</span>' : ''}
-            </div>
-          </th>
-        `;
-      }).join('');
+      if (cronogramaTimelineMode === 'semanal') {
+        tr.innerHTML = OBRA_SEMANAS.map(w => {
+          const isCurrent = w.isCurrent;
+          const bgCls = isCurrent
+            ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-400 font-extrabold'
+            : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300';
+          return `
+            <th class="border table-cell-border min-w-[72px] py-1 text-center ${bgCls}" title="${escapeHtml(w.desc)} (${w.dates})">
+              <div class="flex flex-col items-center justify-center leading-tight">
+                <span class="text-[11px] font-black">${w.label} ${isCurrent ? 'ðŸ”´' : ''}</span>
+                <span class="text-[9px] opacity-75">${w.dates}</span>
+                ${isCurrent ? '<span class="text-[8px] uppercase tracking-tighter bg-rose-500 text-white px-1 rounded-sm mt-0.5">HOJE</span>' : ''}
+              </div>
+            </th>
+          `;
+        }).join('');
+      } else {
+        tr.innerHTML = (projectConfig.days || []).map((d) => {
+          const isTodayClass = d.isToday ? 'bg-sky-500/20 text-sky-600 font-extrabold border-sky-400' : '';
+          const weekendClass = d.isWeekend ? 'bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold' : '';
+          return `
+            <th class="border table-cell-border w-7 py-1 ${isTodayClass} ${weekendClass}" title="${d.isWeekend ? 'Fim de semana' : ''} ${d.isToday ? '- Hoje' : ''}">
+              <span class="text-[10px] block opacity-80 leading-tight">${escapeHtml(d.weekday)}</span>
+              <span class="text-xs font-bold block leading-tight">${escapeHtml(d.dayNum)}</span>
+            </th>
+          `;
+        }).join('');
+      }
     }
 
     function changeCalendarMonth(delta) {
@@ -23721,32 +23311,57 @@
       const startStr = (task.start || '').trim();
       const endStr = (task.end || '').trim();
 
-      // "quando eu não colocar, indica que vou colocar manualmente"
       if (!startStr || !endStr || startStr === '-' || endStr === '-') {
         return;
       }
 
       const range = parseDateRange(startStr, endStr, year, month);
-      if (!range) return;
+      if (!range || range.startDay > range.endDay) return;
 
       if (!task.days) task.days = {};
       const totalDays = new Date(year, month + 1, 0).getDate();
+      const p = Number(task.progress) || 0;
 
+      // Lista de dias agendados da execução nesta janela
+      const scheduledDays = [];
+      for (let d = 1; d <= totalDays; d++) {
+        if (d >= range.startDay && d <= range.endDay) {
+          scheduledDays.push(d);
+        }
+      }
+
+      // Se a tarefa já tem dias marcados como verde pelo usuário, preserva
+      const hasExistingGreen = Object.values(task.days).some(v => v === 'green');
+
+      scheduledDays.forEach((d, idx) => {
+        const dayKey = 'd' + d;
+        // Se já está verde, mantém verde!
+        if (task.days[dayKey] === 'green') return;
+
+        // Se a tarefa já está marcada como 100% concluída, preenche com verde
+        if (p === 100) {
+          task.days[dayKey] = 'green';
+        } else if (p > 0 && !hasExistingGreen) {
+          // Preenche proporcionalmente os dias verdes e amarelos
+          const targetGreens = Math.round(scheduledDays.length * (p / 100));
+          task.days[dayKey] = (idx < targetGreens) ? 'green' : 'yellow';
+        } else {
+          // De acordo com a data de execução, as bolinhas já ficam AMARELAS automaticamente!
+          task.days[dayKey] = 'yellow';
+        }
+      });
+
+      // Remove dias amarelos fora da janela de execução
       for (let d = 1; d <= totalDays; d++) {
         const dayKey = 'd' + d;
-        if (d >= range.startDay && d <= range.endDay) {
-          // Se não estiver concluído (verde), fica amarelo automaticamente!
-          if (task.days[dayKey] !== 'green') {
-            task.days[dayKey] = 'yellow';
-          }
-        } else {
-          // Se estiver fora do período e estava apenas amarelo automático, remove
+        if (d < range.startDay || d > range.endDay) {
           if (task.days[dayKey] === 'yellow') {
             delete task.days[dayKey];
           }
         }
       }
 
+      // Recalcula o progresso de acordo com as bolinhas verdes vs amarelas
       if (autoCalcProgress && typeof recalculateTaskProgressFromDays === 'function') {
         task.progress = recalculateTaskProgressFromDays(task);
       }
@@ -23754,7 +23369,7 @@
 
     function syncAllTasksAutoDays() {
       projectData.forEach(sec => {
-        sec.tasks.forEach(task => {
+        (sec.tasks || []).forEach(task => {
           applyAutoDaysForTask(task, calendarYear, calendarMonth);
         });
       });
@@ -23800,137 +23415,185 @@
       const secPrio = sec ? (sec.priority || (sIdx + 1)) : (sIdx + 1);
       const etapaCode = `${secPrio}.${tIdx + 1}`;
       const p = Number(task.progress) || 0;
+      let progressBadge = 'opacity-70 sub-box border';
+      let statusText = 'Não Iniciada';
+
+      if (p === 100) {
+        progressBadge = 'bg-[#22c55e]/20 text-emerald-600 border border-emerald-500/40 font-bold';
+        statusText = 'Finalizada';
+      } else if (p > 0) {
+        progressBadge = 'bg-[#eab308]/20 text-amber-600 border border-amber-500/40 font-bold';
+        statusText = 'Em Andamento';
+      }
 
       let ownerHtml = '';
       if (task.owner && task.owner.trim()) {
         const list = task.owner.split('/').map(s => s.trim()).filter(Boolean);
         ownerHtml = list.map(name => `
-          <span class="inline-flex items-center gap-1 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded text-[10px] font-bold">
-            <span>👷</span> ${escapeHtml(name)}
+          <span class="inline-block bg-indigo-500/10 text-indigo-600 border border-indigo-500/30 px-1.5 py-0.5 rounded text-[10px] font-semibold mr-1 mb-0.5">
+            ${escapeHtml(name)}
           </span>
         `).join('');
       } else {
-        ownerHtml = `<button onclick="openOwnersManagerModal()" class="text-amber-500 hover:text-amber-600 italic text-[10px] flex items-center gap-1 cursor-pointer">⚠️ Selecionar responsável</button>`;
+        ownerHtml = `<span class="text-amber-500 italic text-[10px] flex items-center gap-1">⚠️ Selecionar</span>`;
       }
 
       const rowBgClass = isCompleted 
         ? 'bg-emerald-500/5 hover:bg-emerald-500/10' 
         : 'table-row-hover';
 
+      const checkBadge = isCompleted ? '<span class="text-emerald-500 font-black text-xs mr-1">✔</span>' : '';
       const m = getTaskDayMetrics(task);
-      const variance = calculateTaskScheduleVariance(task, 2026, 9);
 
-      // Status do Prazo / Saldo
-      let prazoBadge = '';
-      if (isCompleted) {
-        prazoBadge = '<span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">✔ Entregue</span>';
-      } else if (variance.status === 'atrasado') {
-        prazoBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-rose-500/15 text-rose-600 border border-rose-500/30 flex items-center justify-center gap-1 animate-pulse" title="Atrasado em ${variance.daysDiff} dias">🔴 ${variance.daysDiff}d</span>`;
-      } else if (variance.status === 'adiantado') {
-        prazoBadge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-emerald-500/15 text-emerald-600 border border-emerald-500/30 flex items-center justify-center gap-1" title="Adiantado em ${Math.abs(variance.daysDiff)} dias">🟢 +${Math.abs(variance.daysDiff)}d</span>`;
-      } else {
-        prazoBadge = '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-500/15 text-sky-600 border border-sky-500/30">⚡ No Prazo</span>';
-      }
+      // Renderização da Linha do Tempo (Semanal vs Mensal)
+      let timelineCellHtml = '';
+      if (cronogramaTimelineMode === 'semanal') {
+        const g = getTaskGanttBar(task);
+        let barHtml = '';
+        if (g.hasDates) {
+          let barBorder = 'border-slate-300 dark:border-slate-600';
+          let barBg = 'bg-slate-200/90 dark:bg-slate-700/90';
+          let fillBg = 'bg-slate-400';
+          if (p === 100) {
+            barBorder = 'border-emerald-500/70';
+            barBg = 'bg-emerald-500/20';
+            fillBg = 'bg-emerald-600 dark:bg-emerald-500';
+          } else if (p > 0) {
+            barBorder = 'border-amber-500/70';
+            barBg = 'bg-amber-500/20';
+            fillBg = 'bg-gradient-to-r from-amber-500 to-emerald-500';
+          }
 
-      // Datas da Tarefa para verificar se cada dia da semana está agendado
-      const taskStart = parseSingleDate(task.start, 2026, 9);
-      const taskEnd = parseSingleDate(task.end, 2026, 9);
-      if (taskStart) taskStart.setHours(0, 0, 0, 0);
-      if (taskEnd) taskEnd.setHours(23, 59, 59, 999);
-
-      // Renderização das 7 Células dos Dias da Semana (Seg a Dom)
-      const weekDays = getActiveWeekDays(activeWeekIndex);
-      const daysCellsHtml = weekDays.map(d => {
-        const dTime = d.dateObj.getTime();
-        const isScheduled = (taskStart && taskEnd && dTime >= taskStart.getTime() && dTime <= taskEnd.getTime());
-
-        // Status registrado manualmente ou herdado do período
-        let status = task.days ? (task.days[d.dayKey] || task.days['d' + d.dayNum]) : null;
-        if (!status) {
-          if (p === 100 && isScheduled) status = 'green';
-          else if (isScheduled) status = 'yellow';
-          else status = 'empty';
+          barHtml = `
+            <div onclick="cycleTaskStatusQuick(${sIdx}, ${tIdx})" class="absolute top-1 bottom-1 rounded-md shadow-sm border ${barBorder} ${barBg} overflow-hidden cursor-pointer hover:ring-2 hover:ring-sky-400 transition-all flex items-center group" style="left: ${g.leftPct}%; width: ${g.widthPct}%; min-width: 32px;" title="Clique para alternar status rápido (0% ➔ 50% ➔ 100%) | Janela: ${task.start} até ${task.end} | Progresso: ${p}%">
+              <div class="h-full ${fillBg} opacity-90 transition-all duration-300" style="width: ${p}%;"></div>
+              <div class="absolute inset-0 px-2 flex items-center justify-between text-[9px] font-black pointer-events-none drop-shadow-sm truncate">
+                <span class="truncate text-slate-800 dark:text-slate-100">${escapeHtml(task.title)}</span>
+                <span class="shrink-0 ml-1 px-1 py-0.2 rounded font-black ${p===100?'bg-emerald-700 text-white':p>0?'bg-amber-600 text-white':'bg-slate-600 text-white'}">${p}%</span>
+              </div>
+            </div>
+          `;
+        } else {
+          barHtml = `<div class="px-2 text-[10px] opacity-40 italic">Sem datas definidas</div>`;
         }
 
-        let boxCls = 'status-empty';
-        let boxTitle = `${d.weekdayFull} (${d.dateFormatted}): Não planejado`;
-        if (status === 'green') {
-          boxCls = 'status-green';
-          boxTitle = `${d.weekdayFull} (${d.dateFormatted}): Executado / Concluído`;
-        } else if (status === 'yellow') {
-          boxCls = 'status-yellow';
-          boxTitle = `${d.weekdayFull} (${d.dateFormatted}): Em Execução`;
-        }
-
-        const todayBorder = d.isToday ? 'border-rose-400 bg-rose-500/10' : 'table-cell-border';
-
-        return `
-          <td class="border ${todayBorder} p-0 text-center w-14 min-w-[52px]" style="vertical-align:middle;height:32px;">
-            <div class="day-box ${boxCls}" onclick="cycleWeeklyDayStatus(${sIdx}, ${tIdx}, '${d.dayKey}', '${d.dayNum}')" title="${boxTitle} (Clique para alternar)"></div>
+        timelineCellHtml = `
+          <td colspan="11" class="border table-cell-border p-1" style="height: 38px; vertical-align: middle;">
+            <div class="relative w-full h-8 rounded-md bg-slate-100/80 dark:bg-slate-800/60 overflow-hidden border border-slate-200 dark:border-slate-700/80 flex items-center">
+              <div class="absolute inset-0 flex pointer-events-none">
+                ${OBRA_SEMANAS.map(w => `
+                  <div class="flex-1 border-r border-slate-200/60 dark:border-slate-700/40 ${w.isCurrent ? 'bg-rose-500/5' : ''}"></div>
+                `).join('')}
+              </div>
+              <div class="absolute top-0 bottom-0 z-10 pointer-events-none" style="left: 31%; border-left: 2px dashed #ef4444;" title="Semana 4 (19/10/2026) - HOJE">
+                <span class="absolute -top-0.5 -left-2 text-[8px] bg-rose-500 text-white font-black px-1 rounded shadow-xs">S4</span>
+              </div>
+              ${barHtml}
+            </div>
           </td>
         `;
-      }).join('');
+      } else {
+        timelineCellHtml = (projectConfig.days || []).map(d => {
+          const status = (task.days && task.days[d.key]) ? task.days[d.key] : 'empty';
+          let cellClass = 'status-empty';
+          if (status === 'green') cellClass = 'status-green';
+          else if (status === 'yellow') cellClass = 'status-yellow';
+          const todayBorder = d.isToday ? 'border-sky-400 bg-sky-500/10' : 'table-cell-border';
+          return `
+            <td class="border ${todayBorder} p-0 text-center w-7" style="vertical-align:middle;height:28px;">
+              <div class="day-box ${cellClass}" onclick="cycleDayStatus(${sIdx}, ${tIdx}, '${d.key}', '${d.dayNum}')" title="Dia ${d.dayNum} (${d.weekday}): clique para alternar"></div>
+            </td>
+          `;
+        }).join('');
+      }
+
+      const elapsedPct = m.hasDates && m.totalDays > 0 ? Math.min(100, Math.round((m.elapsedDays / m.totalDays) * 100)) : 0;
 
       return `
         <tr class="${rowBgClass} transition-colors border-b table-cell-border">
-          <!-- Col 1: Etapa (Código) -->
-          <td class="border table-cell-border text-center p-1.5 font-bold">
-            <span class="inline-flex items-center justify-center px-2 py-0.5 rounded font-black text-xs ${isCompleted ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30' : p > 0 ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}">
-              ${etapaCode}
-            </span>
-          </td>
-
-          <!-- Col 2: Etapa & Responsável -->
-          <td class="border table-cell-border p-2">
-            <div class="space-y-1">
-              <div contenteditable="true" onblur="updateTaskTitle(${sIdx}, ${tIdx}, this.innerText)" class="cell-editable font-bold text-xs leading-snug ${isCompleted ? 'line-through opacity-70 text-emerald-700 dark:text-emerald-300' : 'text-slate-800 dark:text-slate-100'}">
-                ${escapeHtml(task.title)}
-              </div>
-              <div class="flex items-center gap-1.5 flex-wrap">
-                ${ownerHtml}
-              </div>
-            </div>
-          </td>
-
-          <!-- Col 3: Período (Início ➔ Fim) -->
-          <td class="border table-cell-border p-1.5 text-center">
-            <div class="flex flex-col items-center justify-center leading-tight">
-              <div class="flex items-center gap-1 text-[11px] font-bold">
-                <span contenteditable="true" onblur="updateTaskField(${sIdx}, ${tIdx}, 'start', this.innerText)" class="cell-editable hover:text-sky-600 cursor-pointer" title="Clique para editar">${task.start || '—'}</span>
-                <span class="opacity-40">➔</span>
-                <span contenteditable="true" onblur="updateTaskField(${sIdx}, ${tIdx}, 'end', this.innerText)" class="cell-editable hover:text-sky-600 cursor-pointer" title="Clique para editar">${task.end || '—'}</span>
-              </div>
-              <span class="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-semibold mt-1">
-                ${m.totalDays > 0 ? m.totalDays + ' dias' : '—'}
+          <td class="border table-cell-border text-center p-1 font-bold">
+            <div class="flex flex-col items-center justify-center">
+              <span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded font-black text-[10.5px] ${isCompleted ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30' : 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/30'}" title="Etapa ${etapaCode} do Escopo">
+                ${isCompleted ? '✔ ' : ''}${etapaCode}
               </span>
+              <span class="text-[8px] uppercase tracking-tighter opacity-60 font-bold leading-none mt-0.5">Etapa</span>
+            </div>
+          </td>
+          <td class="border table-cell-border p-2 font-semibold">
+            <div class="flex items-center gap-1.5">
+              ${checkBadge}
+              <span class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold tracking-tight shrink-0 ${isCompleted ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30' : 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20'}">
+                Etapa ${etapaCode}
+              </span>
+              <div contenteditable="true" onblur="updateTaskField(${sIdx}, ${tIdx}, 'title', this.innerText)" class="cell-editable flex-1 ${isCompleted ? 'opacity-85' : ''}" title="Clique para editar o nome da etapa">${escapeHtml(task.title)}</div>
+            </div>
+          </td>
+          
+          <td class="border table-cell-border p-2 cursor-pointer hover:opacity-80 transition" onclick="openSelectOwnerModal(${sIdx}, ${tIdx})" title="Clique para selecionar executores">
+            <div class="flex items-center justify-between gap-1">
+              <div class="flex-1">${ownerHtml}</div>
+              <span class="text-indigo-600 hover:opacity-80 text-xs font-bold px-1.5 py-0.5 bg-indigo-500/10 rounded">âœï¸</span>
             </div>
           </td>
 
-          <!-- Col 4: Progresso (% Concluída com Alternador 1-Clique) -->
-          <td class="border table-cell-border p-1.5 text-center">
+          <td class="border table-cell-border p-2 text-center opacity-80 min-w-[85px]">
+            <div contenteditable="true" onblur="updateTaskField(${sIdx}, ${tIdx}, 'start', this.innerText)" class="cell-editable text-[11px] font-semibold" title="Clique para editar data de início">${escapeHtml(task.start || '-')}</div>
+          </td>
+          <td class="border table-cell-border p-2 text-center font-medium min-w-[85px]">
+            <div contenteditable="true" onblur="updateTaskField(${sIdx}, ${tIdx}, 'end', this.innerText)" class="cell-editable text-[11px] font-semibold" title="Clique para editar data de conclusão">${escapeHtml(task.end || '-')}</div>
+          </td>
+          
+          <!-- % DA ETAPA COM AÃ‡Ã•ES RÁPIDAS DE 1 CLIQUE -->
+          <td class="border table-cell-border p-1 text-center min-w-[130px]">
             <div class="flex flex-col items-center justify-center gap-1">
-              <button onclick="cycleTaskStatusQuick(${sIdx}, ${tIdx})" class="w-full px-2 py-0.5 rounded-md font-black text-[10.5px] transition cursor-pointer hover:scale-105 shadow-2xs ${p === 100 ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40' : p > 0 ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40' : 'bg-slate-200/80 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600'}" title="Clique para alternar (0% ➔ 50% ➔ 100%)">
-                ${p === 100 ? '🟢 100% Concluída' : p > 0 ? `🟡 ${p}% Em Execução` : '⚪ 0% Não Iniciada'}
-              </button>
-              <div class="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                <div class="h-full ${p === 100 ? 'bg-emerald-500' : p > 0 ? 'bg-amber-500' : 'bg-slate-400'}" style="width: ${p}%;"></div>
+              <div class="flex items-center gap-1 font-black ${p===100?'text-emerald-600':p>0?'text-amber-500':'opacity-60'}">
+                <span contenteditable="true" onblur="updateTaskProgress(${sIdx}, ${tIdx}, this.innerText)" class="cell-editable text-sm">${p}</span>%
+                <button onclick="cycleTaskStatusQuick(${sIdx}, ${tIdx})" title="Alternar status rápido (0% ➔ 50% ➔ 100%)" class="px-1.5 py-0.2 rounded text-[9px] ${progressBadge} transition ml-0.5">
+                  ${statusText}
+                </button>
+              </div>
+              <div class="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800 p-0.5 rounded border border-slate-200 dark:border-slate-700">
+                <button onclick="setTaskProgressQuick(${sIdx}, ${tIdx}, 0)" class="px-1 py-0.2 rounded text-[8.5px] ${p===0?'bg-slate-400 text-white font-black':'opacity-60 hover:opacity-100'}" title="Marcar 0%">0%</button>
+                <button onclick="setTaskProgressQuick(${sIdx}, ${tIdx}, 25)" class="px-1 py-0.2 rounded text-[8.5px] ${p===25?'bg-amber-500 text-white font-black':'opacity-60 hover:opacity-100'}" title="Marcar 25%">25%</button>
+                <button onclick="setTaskProgressQuick(${sIdx}, ${tIdx}, 50)" class="px-1 py-0.2 rounded text-[8.5px] ${p===50?'bg-amber-600 text-white font-black':'opacity-60 hover:opacity-100'}" title="Marcar 50%">50%</button>
+                <button onclick="setTaskProgressQuick(${sIdx}, ${tIdx}, 75)" class="px-1 py-0.2 rounded text-[8.5px] ${p===75?'bg-emerald-500 text-white font-black':'opacity-60 hover:opacity-100'}" title="Marcar 75%">75%</button>
+                <button onclick="setTaskProgressQuick(${sIdx}, ${tIdx}, 100)" class="px-1 py-0.2 rounded text-[8.5px] ${p===100?'bg-emerald-600 text-white font-black':'opacity-60 hover:opacity-100'}" title="Marcar 100% Concluído">✔ 100%</button>
               </div>
             </div>
           </td>
 
-          <!-- Col 5: Prazo / Saldo -->
-          <td class="border table-cell-border p-1.5 text-center">
-            ${prazoBadge}
+          <!-- CONTAGEM DINÃ‚MICA DE DIAS & SALDO DE PRAZO -->
+          <td class="border table-cell-border p-1.5 text-center bg-slate-50/50 dark:bg-slate-900/20 min-w-[130px]">
+            ${(() => {
+              if (!m.hasDates) {
+                return `<span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] ${m.badgeClass}">${m.badgeText}</span>`;
+              }
+              return `
+                <div class="flex flex-col items-center justify-center gap-0.5">
+                  <div class="flex items-center gap-1">
+                    <span class="font-extrabold text-[11px] text-slate-800 dark:text-slate-200">⏱️ ${m.totalDays} dias</span>
+                  </div>
+                  <div class="text-[9px] opacity-75 leading-tight">
+                    ${m.status === 'completed' ? '<span class="text-emerald-600 font-bold">Totalmente concluído</span>' : `<span>${m.elapsedDays}d decorr. • <strong>${m.remainingDays}d rest.</strong></span>`}
+                  </div>
+                  <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden my-0.5" title="Tempo decorrido: ${elapsedPct}%">
+                    <div class="h-full ${m.status === 'delayed' ? 'bg-rose-500' : 'bg-sky-500'}" style="width: ${elapsedPct}%;"></div>
+                  </div>
+                  <span class="inline-block px-1.5 py-0.2 rounded text-[9px] ${m.badgeClass}">${m.badgeText}</span>
+                </div>
+              `;
+            })()}
           </td>
 
-          <!-- Col 6 a 12: Os 7 Dias da Semana (Seg a Dom) -->
-          ${daysCellsHtml}
+          <!-- LINHA DO TEMPO VISUAL (SEMANAL GANTT OU MENSAL 31 DIAS) -->
+          ${timelineCellHtml}
 
-          <!-- Col 13: Ação -->
           <td class="border table-cell-border text-center no-print p-1">
-            <button onclick="deleteTask(${sIdx}, ${tIdx})" title="Excluir etapa" class="p-1 text-rose-400 hover:text-rose-600 hover:bg-rose-500/10 rounded transition text-xs cursor-pointer">
-              🗑️
-            </button>
+            <div class="flex items-center justify-center gap-0.5">
+              <button onclick="moveTaskOrder(${sIdx}, ${tIdx}, 'up')" ${tIdx === 0 ? 'disabled class="opacity-20 cursor-not-allowed text-[10px] px-0.5"' : 'class="hover:text-sky-500 transition cursor-pointer text-[10px] px-0.5"'} title="Subir etapa no escopo">▲</button>
+              <button onclick="moveTaskOrder(${sIdx}, ${tIdx}, 'down')" ${tIdx === (sec ? sec.tasks.length - 1 : 0) ? 'disabled class="opacity-20 cursor-not-allowed text-[10px] px-0.5"' : 'class="hover:text-sky-500 transition cursor-pointer text-[10px] px-0.5"'} title="Descer etapa no escopo">▼</button>
+              <button onclick="deleteTask(${sIdx}, ${tIdx})" title="Excluir etapa do escopo" class="text-rose-500 hover:text-rose-700 font-bold p-0.5 transition text-xs ml-0.5">âœ•</button>
+            </div>
           </td>
         </tr>
       `;
@@ -23938,10 +23601,7 @@
 
     function renderSheetBody() {
       const tbody = document.getElementById('sheet-body');
-      if (!tbody) return;
       let html = '';
-
-      updateExecutiveWeekUI();
 
       const archivedCount = projectData.filter(s => s.archived).length;
       const countEl = document.getElementById('archived-frentes-badge');
@@ -23958,8 +23618,8 @@
         targetSections = projectData.map((sec, sIdx) => ({ sec, sIdx })).filter(({ sec }) => !sec.archived);
       }
 
-      const totalTableCols = 13; // 5 colunas à esquerda + 7 dias da semana + 1 ação
-      const weekDays = getActiveWeekDays(activeWeekIndex);
+      const timelineCols = cronogramaTimelineMode === 'semanal' ? 11 : (projectConfig.days ? projectConfig.days.length : 30);
+      const totalTableCols = 7 + timelineCols + 1;
 
       if (cronogramaProjectFilter === 'archived') {
         html += `
@@ -23987,20 +23647,13 @@
           }
         });
 
-        const secG = getSectionGanttBar(sec);
-        const secAvgProg = secG.avgProgress || 0;
+        const timelinePlaceholder = cronogramaTimelineMode === 'semanal' 
+          ? `<td colspan="11" class="border table-cell-border"></td>`
+          : (projectConfig.days || []).map(() => `<td class="border table-cell-border"></td>`).join('');
 
-        // Células dos 7 dias para a linha da Frente
-        const secDaysCells = weekDays.map(d => `
-          <td class="border table-cell-border p-1 text-center w-14 min-w-[52px] ${d.isToday ? 'bg-rose-500/10 border-rose-400' : ''}">
-            <span class="text-[9px] font-bold opacity-60">${d.weekday}</span>
-          </td>
-        `).join('');
-
-        // Linha Cabeçalho da Frente de Obra (Alinhada perfeitamente nas 13 colunas)
+        // Cabeçalho da Frente de Obra com controles de Prioridade
         html += `
-          <tr class="table-header font-bold border-t-2 border-b table-cell-border bg-slate-100/90 dark:bg-slate-800/90">
-            <!-- Col 1: Prioridade Frente -->
+          <tr class="table-header font-bold border-t-2 border-b table-cell-border">
             <td class="border table-cell-border p-1.5 text-center text-sm font-extrabold no-print">
               <div class="flex items-center justify-center gap-1">
                 <div class="flex flex-col gap-0.5">
@@ -24010,48 +23663,29 @@
                 <span contenteditable="true" onblur="updateSectionPriority(${sIdx}, this.innerText)" class="cell-editable px-1 font-black text-sky-600 dark:text-sky-400 cursor-pointer" title="Clique para editar o número da prioridade">${sec.priority}</span>
               </div>
             </td>
-
-            <!-- Col 2: Título e Escopo Frente -->
-            <td class="border table-cell-border p-2 text-left font-bold">
+            <td colspan="6" class="border table-cell-border p-2 text-left font-bold">
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
                   <span class="text-xs px-2 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-extrabold">Frente ${sec.priority}</span>
-                  <span contenteditable="true" onblur="updateSectionTitle(${sIdx}, this.innerText)" class="cell-editable text-sm font-black text-slate-800 dark:text-slate-100">${escapeHtml(sec.title)}</span>
+                  <span contenteditable="true" onblur="updateSectionTitle(${sIdx}, this.innerText)" class="cell-editable text-sm">${escapeHtml(sec.title)}</span>
                 </div>
-                <div class="text-[10px] opacity-70 font-semibold flex items-center gap-1.5">
-                  <span>${sec.tasks.length} etapas</span>
+                <div class="flex items-center gap-2 text-[10px] opacity-70 font-normal">
+                  <span class="font-bold">${sec.tasks.length} etapas no escopo</span>
+                  <span>•</span>
+                  <span class="text-amber-600 dark:text-amber-400 font-bold">${pendingList.length} em andamento</span>
+                  <span>•</span>
+                  <span class="text-emerald-600 dark:text-emerald-400 font-bold">${completedList.length} concluídas</span>
                 </div>
               </div>
             </td>
-
-            <!-- Col 3: Período Geral Frente -->
-            <td class="border table-cell-border p-1.5 text-center text-[10px] font-bold">
-              ${secG.hasDates ? `${secG.startDisplay} ➔ ${secG.endDisplay}` : '—'}
-            </td>
-
-            <!-- Col 4: Avanço Médio Frente -->
-            <td class="border table-cell-border p-1.5 text-center">
-              <span class="px-2 py-0.5 rounded-full font-black text-[10.5px] ${secAvgProg === 100 ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' : secAvgProg > 0 ? 'bg-indigo-500/20 text-indigo-700 dark:text-indigo-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-600'}">
-                ${secAvgProg}% médio
-              </span>
-            </td>
-
-            <!-- Col 5: Resumo Conclusão -->
-            <td class="border table-cell-border p-1.5 text-center text-[10px] font-bold">
-              <span class="text-emerald-600">${completedList.length}✔</span> / <span class="text-amber-500">${pendingList.length}⚡</span>
-            </td>
-
-            <!-- Col 6 a 12: Os 7 Dias da Semana -->
-            ${secDaysCells}
-
-            <!-- Col 13: Ação Frente -->
+            ${timelinePlaceholder}
             <td class="border table-cell-border text-center no-print p-1">
               <div class="flex items-center justify-center gap-1">
-                <button onclick="openNewTaskModal(${sIdx})" title="Adicionar etapa no escopo desta frente" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-bold transition flex items-center justify-center gap-1 shadow-xs cursor-pointer">
+                <button onclick="openNewTaskModal(${sIdx})" title="Adicionar etapa no escopo desta frente" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-bold transition flex items-center justify-center gap-1 shadow-sm">
                   <span>+</span> Etapa
                 </button>
-                <button onclick="deleteSection(${sIdx})" title="Excluir frente de obra" class="p-1 text-rose-400 hover:text-rose-600 hover:bg-rose-500/10 rounded transition text-xs cursor-pointer">
-                  🗑️
+                <button onclick="deleteSection(${sIdx})" title="Excluir frente de obra" class="p-1 text-rose-400 hover:text-rose-600 hover:bg-rose-500/10 rounded transition text-xs">
+                  ðŸ—‘ï¸
                 </button>
               </div>
             </td>
@@ -24076,7 +23710,7 @@
               html += `
                 <tr class="bg-amber-500/10 dark:bg-amber-950/30 border-t border-b border-amber-500/30 text-amber-800 dark:text-amber-300 font-bold text-[11px]">
                   <td class="border table-cell-border p-1 text-center font-black">⚡</td>
-                  <td colspan="4" class="p-1 pl-3">
+                  <td colspan="6" class="p-1 pl-3">
                     <div class="flex items-center justify-between pr-2">
                       <span class="flex items-center gap-1.5">
                         <span>⚡</span> <strong>Atividades em Andamento / Prioridade</strong> (${pendingList.length})
@@ -24084,9 +23718,7 @@
                       <span class="text-[10px] font-normal opacity-75">Foco de execução imediata</span>
                     </div>
                   </td>
-                  <td colspan="7" class="border table-cell-border text-[9.5px] text-center font-semibold text-amber-700 dark:text-amber-300">
-                    Acompanhamento Diário: Semana ${OBRA_SEMANAS[activeWeekIndex].label}
-                  </td>
+                  ${timelinePlaceholder}
                   <td class="border table-cell-border no-print"></td>
                 </tr>
               `;
@@ -24094,63 +23726,105 @@
             pendingList.forEach(({ task, tIdx }) => {
               html += renderTaskRowHtml(task, sIdx, tIdx, false);
             });
+          } else if (cronogramaFilter === 'all' && completedList.length > 0) {
+            html += `
+              <tr class="bg-emerald-500/10 border-b border-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold text-xs">
+                <td class="border table-cell-border p-1.5 text-center">🎉</td>
+                <td colspan="6" class="p-2 pl-3">
+                  🎉 Parabéns! Todas as etapas desta frente de obra foram 100% concluídas!
+                </td>
+                ${timelinePlaceholder}
+                <td class="border table-cell-border no-print"></td>
+              </tr>
+            `;
+          } else if (cronogramaFilter === 'pending' && pendingList.length === 0) {
+            html += `
+              <tr class="border-b table-cell-border">
+                <td colspan="${totalTableCols}" class="p-2 text-center opacity-60 text-xs italic">
+                  Nenhuma atividade pendente nesta frente.
+                </td>
+              </tr>
+            `;
           }
         }
 
-        // 2. ATIVIDADES CONCLUÍDAS
+        // 2. ESPAÃ‡O DE ATIVIDADES CONCLUÍDAS
         if (cronogramaFilter !== 'pending') {
           if (completedList.length > 0) {
-            if (pendingList.length > 0 && cronogramaFilter === 'all') {
-              html += `
-                <tr class="bg-emerald-500/10 dark:bg-emerald-950/30 border-t border-b border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-bold text-[11px]">
-                  <td class="border table-cell-border p-1 text-center font-black">✔</td>
-                  <td colspan="4" class="p-1 pl-3">
-                    <div class="flex items-center justify-between pr-2">
-                      <span class="flex items-center gap-1.5">
-                        <span>✔</span> <strong>Atividades Concluídas</strong> (${completedList.length})
-                      </span>
-                      <span class="text-[10px] font-normal opacity-75">Histórico concluído com sucesso</span>
-                    </div>
-                  </td>
-                  <td colspan="7" class="border table-cell-border text-[9.5px] text-center font-semibold text-emerald-700 dark:text-emerald-300">
-                    Concluídas na Semana ${OBRA_SEMANAS[activeWeekIndex].label}
-                  </td>
-                  <td class="border table-cell-border no-print"></td>
-                </tr>
-              `;
-            }
+            html += `
+              <tr class="bg-emerald-500/10 dark:bg-emerald-950/40 border-t-2 border-b border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-bold text-[11px]">
+                <td class="border table-cell-border p-1 text-center font-black">✔</td>
+                <td colspan="6" class="p-1 pl-3">
+                  <div class="flex items-center justify-between pr-2">
+                    <span class="flex items-center gap-1.5">
+                      <span>✔</span> <strong>Espaço de Atividades Concluídas</strong> (${completedList.length})
+                    </span>
+                    <span class="text-[10px] font-normal opacity-75">Etapas finalizadas (100%)</span>
+                  </div>
+                </td>
+                ${timelinePlaceholder}
+                <td class="border table-cell-border no-print"></td>
+              </tr>
+            `;
             completedList.forEach(({ task, tIdx }) => {
               html += renderTaskRowHtml(task, sIdx, tIdx, true);
             });
+          } else if (cronogramaFilter === 'completed' && completedList.length === 0) {
+            html += `
+              <tr class="border-b table-cell-border">
+                <td colspan="${totalTableCols}" class="p-2 text-center opacity-60 text-xs italic">
+                  Nenhuma atividade concluída nesta frente ainda.
+                </td>
+              </tr>
+            `;
           }
         }
       });
+
+      if (cronogramaProjectFilter === 'all' && archivedCount > 0) {
+        html += `
+          <tr class="sub-box border-t-2 border-dashed table-cell-border">
+            <td colspan="${totalTableCols}" class="p-3 text-center">
+              <div class="flex items-center justify-center gap-3 text-xs opacity-75">
+                <span>📁 <strong>${archivedCount} frentes anteriores arquivadas</strong> (Fase Setembro/2026 concluída e arquivada).</span>
+                <button onclick="setCronogramaProjectFilter('archived')" class="px-2.5 py-1 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold hover:underline cursor-pointer">
+                  Ver Frentes Arquivadas &rarr;
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
 
       tbody.innerHTML = html;
     }
 
     function recalculateTaskProgressFromDays(task) {
-      if (!autoCalcProgress) return task.progress;
+      if (!autoCalcProgress) return Number(task.progress) || 0;
 
       const days = task.days || {};
-      const dayKeys = Object.keys(days);
-      
       let greenCount = 0;
       let yellowCount = 0;
 
-      dayKeys.forEach(k => {
+      Object.keys(days).forEach(k => {
         if (days[k] === 'green') greenCount++;
         else if (days[k] === 'yellow') yellowCount++;
       });
 
       const totalActiveDays = greenCount + yellowCount;
 
-      if (totalActiveDays === 0) return 0;
-      if (yellowCount === 0 && greenCount > 0) return 100;
-      if (greenCount === 0 && yellowCount > 0) return 25;
+      // Se não há dias agendados, mantém o valor original ou 0
+      if (totalActiveDays === 0) return Number(task.progress) || 0;
 
-      const calculatedPct = Math.round(((greenCount + (yellowCount * 0.4)) / totalActiveDays) * 100);
-      return Math.min(95, Math.max(10, calculatedPct));
+      // Se nenhuma bolinha foi concluída (todas amarelas = planejadas), o progresso é 0%!
+      if (greenCount === 0) return 0;
+
+      // Só vai ser concluída quando REALMENTE fechar TUDO de verde!
+      if (greenCount === totalActiveDays) return 100;
+
+      // Calcula a porcentagem proporcional exata de dias executados (verdes) sobre o total
+      const calculatedPct = Math.round((greenCount / totalActiveDays) * 100);
+      return Math.min(99, Math.max(1, calculatedPct));
     }
 
     function cycleDayStatus(secIdx, taskIdx, dayKey, dayNum) {
@@ -24160,243 +23834,61 @@
       const current = task.days[dayKey] || 'empty';
       let next = 'yellow';
 
-      if (current === 'yellow') next = 'green';
-      else if (current === 'green') next = 'empty';
+      if (current === 'yellow') {
+        // Clicou na bolinha amarela (planejada): marca como EXECUTADA (verde)!
+        next = 'green';
+      } else if (current === 'green') {
+        // Clicou na bolinha verde (executada): volta para PLANEJADA (amarela)!
+        // Não conclui a etapa nem apaga o dia, apenas volta a ser pendente.
+        next = 'yellow';
+      } else {
+        // Célula vazia: adiciona dia planejado (amarelo)
+        next = 'yellow';
+      }
 
-      if (next === 'empty') delete task.days[dayKey];
-      else task.days[dayKey] = next;
+      task.days[dayKey] = next;
 
+      // Recalcula o progresso de acordo com as bolinhas feitas
       if (autoCalcProgress) {
         task.progress = recalculateTaskProgressFromDays(task);
       }
 
+      saveData();
       renderSheetBody();
       recordSave();
       renderDashboard();
+      updateKPIs();
     }
 
     function cycleTaskStatusQuick(secIdx, taskIdx) {
       const task = projectData[secIdx].tasks[taskIdx];
       const p = Number(task.progress) || 0;
 
+      if (!task.days) task.days = {};
+      const dayKeys = Object.keys(task.days);
+
       if (p === 100) {
+        // Estava 100%, volta para 0% (todas as bolinhas voltam a ficar amarelas)
         task.progress = 0;
-        if (task.days) {
-          Object.keys(task.days).forEach(k => {
-            if (task.days[k] === 'green') task.days[k] = 'yellow';
-          });
-        }
+        dayKeys.forEach(k => { task.days[k] = 'yellow'; });
       } else if (p > 0) {
+        // Estava em andamento, conclui tudo (todas as bolinhas ficam verdes)
         task.progress = 100;
-        if (task.days) {
-          Object.keys(task.days).forEach(k => {
-            task.days[k] = 'green';
-          });
-        }
+        dayKeys.forEach(k => { task.days[k] = 'green'; });
       } else {
+        // Estava 0%, marca metade (50%)
         task.progress = 50;
+        const half = Math.ceil(dayKeys.length / 2);
+        dayKeys.forEach((k, idx) => {
+          task.days[k] = (idx < half) ? 'green' : 'yellow';
+        });
       }
 
+      saveData();
       renderSheetBody();
       recordSave();
       renderDashboard();
-    }
-
-    function updateOwnersCountBadge() {
-      const count = projectOwners.length;
-      const b1 = document.getElementById('owners-count-badge');
-      if (b1) b1.innerText = count;
-      const b2 = document.getElementById('header-owners-count-badge');
-      if (b2) b2.innerText = count;
-      const b3 = document.getElementById('diario-owners-count-badge');
-      if (b3) b3.innerText = count;
-      const b4 = document.getElementById('owners-modal-count');
-      if (b4) b4.innerText = count;
-    }
-
-    function openOwnersManagerModal() {
-      renderOwnersManagerList();
-      document.getElementById('new-owner-name-input').value = '';
-      document.getElementById('owners-manager-modal').classList.remove('hidden');
-      setTimeout(() => document.getElementById('new-owner-name-input').focus(), 100);
-    }
-
-    function closeOwnersManagerModal() {
-      document.getElementById('owners-manager-modal').classList.add('hidden');
-    }
-
-    function renderOwnersManagerList() {
-      const list = document.getElementById('owners-modal-list');
-      updateOwnersCountBadge();
-
-      if (projectOwners.length === 0) {
-        list.innerHTML = `<div class="p-3 text-center opacity-60 text-xs">Nenhum integrante cadastrado.</div>`;
-        return;
-      }
-
-      list.innerHTML = projectOwners.map((owner, idx) => {
-        const oName = getOwnerName(owner);
-        const oCargo = getOwnerCargo(owner);
-        const cargoInfo = getCargoInfo(oCargo);
-
-        const workerFaltas = (faltasItems || []).filter(f => f.workerName.toLowerCase() === oName.toLowerCase()).length;
-        const faltasTag = workerFaltas > 0
-          ? `<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-rose-500/15 text-rose-600 border border-rose-500/30" title="${workerFaltas} falta(s) registrada(s)">❌ ${workerFaltas} falta(s)</span>`
-          : `<span class="text-[9px] px-1.5 py-0.5 rounded font-semibold bg-emerald-500/10 text-emerald-600">✅ 100%</span>`;
-
-        return `
-          <div class="flex items-center justify-between p-2 sub-box border rounded-lg transition gap-2 hover:border-indigo-400">
-            <div class="flex items-center gap-2 flex-1 min-w-0">
-              <span class="text-base">${cargoInfo.icon}</span>
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <input type="text" value="${escapeHtml(oName)}" onchange="updateOwnerName(${idx}, this.value)" class="font-bold text-xs px-1.5 py-0.5 rounded border border-transparent hover:border-slate-300 dark:hover:border-slate-600 focus:border-indigo-500 card-bg transition w-36" title="Clique para editar o nome do executor">
-                  <button onclick="promptEditOwnerName(${idx})" class="text-[11px] opacity-60 hover:opacity-100 text-indigo-600 dark:text-indigo-400 p-0.5 cursor-pointer" title="Editar nome">✏️</button>
-                  ${faltasTag}
-                </div>
-                <span class="text-[10px] opacity-60 truncate">${cargoInfo.label}</span>
-              </div>
-            </div>
-            
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <select onchange="updateOwnerCargo(${idx}, this.value)" class="text-[10px] font-bold border rounded px-1.5 py-1 ${cargoInfo.color} focus:outline-none cursor-pointer">
-                <option value="Engenheiro" ${oCargo==='Engenheiro'?'selected':''}>👷‍♂️ Engenheiro</option>
-                <option value="Téc. Segurança do Trabalho" ${oCargo==='Téc. Segurança do Trabalho'?'selected':''}>🛡️ Téc. Segurança</option>
-                <option value="Encarregado" ${oCargo==='Encarregado'?'selected':''}>📋 Encarregado</option>
-                <option value="Topógrafo" ${oCargo==='Topógrafo'?'selected':''}>📐 Topógrafo</option>
-                <option value="Auxiliar de Topógrafo" ${oCargo==='Auxiliar de Topógrafo'?'selected':''}>🔭 Aux. Topógrafo</option>
-                <option value="Pedreiro" ${oCargo==='Pedreiro'?'selected':''}>🧱 Pedreiro</option>
-                <option value="Serralheiro" ${oCargo==='Serralheiro'?'selected':''}>🔥 Serralheiro</option>
-                <option value="Pintor" ${oCargo==='Pintor'?'selected':''}>🎨 Pintor</option>
-                <option value="Eletricista / Encanador" ${oCargo==='Eletricista / Encanador'?'selected':''}>⚡ Instalador</option>
-                <option value="Ajudante" ${oCargo==='Ajudante'?'selected':''}>🦺 Ajudante</option>
-              </select>
-
-              <button onclick="removeOwnerFromList(${idx})" class="p-1 text-rose-500 hover:text-rose-700 rounded transition cursor-pointer" title="Excluir ${escapeHtml(oName)}">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function updateOwnerName(idx, newName) {
-      newName = (newName || '').trim();
-      if (!newName) return;
-      const oldName = getOwnerName(projectOwners[idx]);
-      if (oldName === newName) return;
-
-      if (projectOwners.some((o, i) => i !== idx && getOwnerName(o).toLowerCase() === newName.toLowerCase())) {
-        alert(`Já existe um executor cadastrado com o nome "${newName}".`);
-        renderOwnersManagerList();
-        return;
-      }
-
-      if (typeof projectOwners[idx] === 'string') {
-        projectOwners[idx] = { name: newName, cargo: DEFAULT_CARGOS[newName] || 'Pedreiro' };
-      } else {
-        projectOwners[idx].name = newName;
-      }
-
-      // Sincronizar nome nas tarefas do cronograma
-      (projectData || []).forEach(sec => {
-        (sec.tasks || []).forEach(task => {
-          if (task.owner && task.owner.toLowerCase().includes(oldName.toLowerCase())) {
-            const parts = task.owner.split('/').map(p => p.trim());
-            const updated = parts.map(p => p.toLowerCase() === oldName.toLowerCase() ? newName : p);
-            task.owner = updated.join(' / ');
-          }
-        });
-      });
-
-      // Sincronizar em faltas
-      (faltasItems || []).forEach(f => {
-        if (f.workerName && f.workerName.toLowerCase() === oldName.toLowerCase()) {
-          f.workerName = newName;
-        }
-      });
-
-      // Sincronizar no diário de obra
-      (diarioItems || []).forEach(entry => {
-        if (entry.efetivos && Array.isArray(entry.efetivos)) {
-          entry.efetivos = entry.efetivos.map(n => n.toLowerCase() === oldName.toLowerCase() ? newName : n);
-        }
-      });
-
-      saveOwners();
-      saveAllData(true);
-      saveDiario();
-      renderOwnersManagerList();
-      renderSheetBody();
-      renderDashboard();
-      if (cronogramaViewMode === 'executores') renderMirroredSchedule();
-      showSyncToast(`✏️ Executor "${oldName}" atualizado para "${newName}".`);
-    }
-
-    function promptEditOwnerName(idx) {
-      const current = getOwnerName(projectOwners[idx]);
-      const newName = prompt(`Editar nome do executor:`, current);
-      if (newName && newName.trim() && newName.trim() !== current) {
-        updateOwnerName(idx, newName.trim());
-      }
-    }
-
-    function updateOwnerCargo(idx, newCargo) {
-      if (typeof projectOwners[idx] === 'string') {
-        projectOwners[idx] = { name: projectOwners[idx], cargo: newCargo };
-      } else {
-        projectOwners[idx].cargo = newCargo;
-      }
-      saveOwners();
-      renderOwnersManagerList();
-      renderDashboard();
-      if (cronogramaViewMode === 'executores') {
-        renderMirroredSchedule();
-      }
-    }
-
-    function addNewOwnerToList() {
-      const input = document.getElementById('new-owner-name-input');
-      const cargoSelect = document.getElementById('new-owner-cargo-select');
-      const name = input.value.trim();
-      const cargo = cargoSelect ? cargoSelect.value : 'Pedreiro';
-      if (!name) return;
-
-      if (projectOwners.some(o => getOwnerName(o).toLowerCase() === name.toLowerCase())) {
-        alert(`O colaborador "${name}" já está cadastrado.`);
-        return;
-      }
-
-      projectOwners.push({ name, cargo });
-      projectOwners.sort((a, b) => getOwnerName(a).localeCompare(getOwnerName(b)));
-      saveOwners();
-      renderOwnersManagerList();
-      input.value = '';
-      renderDashboard();
-      if (cronogramaViewMode === 'executores') {
-        renderMirroredSchedule();
-      }
-      showSyncToast(`👷 "${name}" (${cargo}) adicionado à equipe.`);
-    }
-
-    function removeOwnerFromList(idx) {
-      const name = getOwnerName(projectOwners[idx]);
-      if (confirm(`Excluir o colaborador "${name}" da lista da equipe?`)) {
-        projectOwners.splice(idx, 1);
-        saveOwners();
-        renderOwnersManagerList();
-        renderDashboard();
-        if (cronogramaViewMode === 'executores') {
-          renderMirroredSchedule();
-        }
-        showSyncToast(`🗑️ Executor "${name}" removido.`);
-      }
-    }
-
-    function saveOwners() {
-      localStorage.setItem(STORAGE_OWNERS_KEY, JSON.stringify(projectOwners));
-      updateOwnersCountBadge();
+      updateKPIs();
     }
 
     function openSelectOwnerModal(secIdx, taskIdx) {
@@ -25337,100 +24829,97 @@
       const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
       const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-      const weekHeaders = OBRA_SEMANAS.map(w => `
-        <th style="text-align:center;padding:4px 1px;font-size:8px;border:1px solid #cbd5e1;background:${w.isCurrent ? '#fee2e2' : '#f8fafc'};color:${w.isCurrent ? '#b91c1c' : '#334155'};min-width:32px;">
-          <strong>${w.label}</strong><br><span style="font-size:7px;opacity:0.8">${w.dates.split('-')[0].trim()}</span>
-        </th>
-      `).join('');
+      const monthTitle = projectConfig.monthTitle || 'Setembro';
+      const year = projectConfig.calendarYear || 2026;
+      const days = projectConfig.days || [];
+
+      // Cabeçalho dos dias
+      const dayHeaders = days.length > 0
+        ? days.map(d => `<th style="text-align:center;width:22px;font-size:9px">${d}</th>`).join('')
+        : Array.from({length:15}, (_, i) => `<th style="text-align:center;width:22px;font-size:9px">${i+1}</th>`).join('');
+
+      // Legenda de cores
+      const legendHtml = `
+        <div style="display:flex;gap:12px;margin-bottom:10px;font-size:9px;align-items:center">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:50%;background:#22c55e;display:inline-block"></span>Concluído</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:50%;background:#f59e0b;display:inline-block"></span>Em Andamento</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:50%;background:#e2e8f0;display:inline-block"></span>Não Iniciado</span>
+        </div>`;
 
       let sectionsHtml = '';
+      const numDays = days.length > 0 ? days.length : 15;
+      const dayKeys = Array.from({length: numDays}, (_, i) => `d${i+1}`);
 
       projectData.forEach(sec => {
-        if (sec.archived) return;
         const avgSec = sec.tasks.length > 0
           ? Math.round(sec.tasks.reduce((s, t) => s + (Number(t.progress) || 0), 0) / sec.tasks.length) : 0;
         const situBadge = avgSec === 100
-          ? '<span style="background:#dcfce7;color:#166534;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700">✅ Concluída</span>'
+          ? `<span class="badge" style="background:#dcfce7;color:#166534">✅ Concluída</span>`
           : avgSec > 0
-          ? '<span style="background:#fef9c3;color:#713f12;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700">⚙️ Em Andamento</span>'
-          : '<span style="background:#f1f5f9;color:#64748b;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700">⏳ Aguardando</span>';
+          ? `<span class="badge" style="background:#fef9c3;color:#713f12">⚙️ Em Andamento</span>`
+          : `<span class="badge" style="background:#f1f5f9;color:#64748b">⏳ Aguardando</span>`;
 
         let taskRows = '';
         sec.tasks.forEach((task, ti) => {
           const p = Number(task.progress) || 0;
           const progColor = p === 100 ? '#22c55e' : p > 0 ? '#f59e0b' : '#94a3b8';
-          const g = getTaskGanttBar(task);
-          
-          let ganttBarPdf = '';
-          if (g.hasDates) {
-            ganttBarPdf = `
-              <div style="position:relative;width:100%;height:16px;background:#f1f5f9;border-radius:3px;overflow:hidden;">
-                <div style="position:absolute;left:${g.leftPct}%;width:${g.widthPct}%;top:2px;bottom:2px;border-radius:2px;background:${progColor};color:#fff;font-size:8px;font-weight:bold;line-height:12px;padding-left:2px;overflow:hidden;white-space:nowrap;">
-                  ${p}%
-                </div>
-              </div>
-            `;
-          } else {
-            ganttBarPdf = '<span style="font-size:8px;color:#94a3b8">—</span>';
-          }
+          const dayCells = dayKeys.map(dk => {
+            const col = task.days ? (task.days[dk] || '') : '';
+            let bg = '#f1f5f9';
+            if (col === 'green') bg = '#22c55e';
+            else if (col === 'yellow') bg = '#f59e0b';
+            else if (col === 'red') bg = '#ef4444';
+            else if (col === 'blue') bg = '#3b82f6';
+            return `<td style="text-align:center;padding:3px 1px"><div style="width:14px;height:14px;border-radius:50%;background:${bg};margin:auto"></div></td>`;
+          }).join('');
 
           taskRows += `
             <tr>
-              <td style="width:32px;text-align:center;font-weight:700;color:#0284c7;font-size:9px;border:1px solid #e2e8f0;">${sec.priority}.${ti + 1}</td>
-              <td style="max-width:200px;font-size:9px;border:1px solid #e2e8f0;"><strong style="color:#0284c7">Etapa ${sec.priority}.${ti + 1}:</strong> ${escapeHtml(task.title || '-')}</td>
-              <td style="max-width:90px;font-size:8.5px;color:#64748b;border:1px solid #e2e8f0;">${escapeHtml(task.owner || '—')}</td>
-              <td style="text-align:center;font-size:8.5px;border:1px solid #e2e8f0;white-space:nowrap;">${task.start || '—'} ➔ ${task.end || '—'}</td>
-              <td style="text-align:center;border:1px solid #e2e8f0;">
-                <span style="font-size:8.5px;font-weight:bold;color:${progColor}">${p}%</span>
+              <td style="width:36px;text-align:center;font-weight:700;color:#0284c7;font-size:9px">${sec.priority}.${ti + 1}</td>
+              <td style="max-width:180px"><strong style="color:#0284c7">Etapa ${sec.priority}.${ti + 1}:</strong> ${task.title || '-'}</td>
+              <td style="max-width:100px;font-size:9px;color:#64748b">${task.owner || '—'}</td>
+              <td style="text-align:center;font-size:9px">${task.start || '—'}</td>
+              <td style="text-align:center;font-size:9px">${task.end || '—'}</td>
+              <td style="text-align:center">
+                <div style="display:flex;align-items:center;gap:3px">
+                  <div style="flex:1;background:#e2e8f0;border-radius:3px;height:6px"><div style="width:${p}%;height:6px;border-radius:3px;background:${progColor}"></div></div>
+                  <span style="font-size:8px;color:${progColor};font-weight:700;min-width:22px">${p}%</span>
+                </div>
               </td>
-              <td colspan="11" style="border:1px solid #e2e8f0;padding:2px 4px;">
-                ${ganttBarPdf}
-              </td>
+              ${dayCells}
             </tr>`;
         });
 
         sectionsHtml += `
-          <div style="margin-bottom:14px;page-break-inside:avoid;">
-            <div style="background:#f1f5f9;padding:6px 10px;font-weight:bold;font-size:10.5px;display:flex;justify-content:space-between;align-items:center;border-left:4px solid #0284c7;margin-bottom:4px;">
-              <span>Frente ${sec.priority}: ${escapeHtml(sec.title)}</span>
-              <span>${situBadge}</span>
-            </div>
-            <table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
+          <div class="section-block">
+            <div class="section-title">Frente ${sec.priority}: ${sec.title} &nbsp;&nbsp;${situBadge.replace('class="badge"','style="padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700"')}</div>
+            <table>
               <thead>
-                <tr style="background:#f8fafc;font-size:8.5px;">
-                  <th style="width:32px;border:1px solid #cbd5e1;padding:4px;">Etapa</th>
-                  <th style="border:1px solid #cbd5e1;padding:4px;text-align:left;">Escopo da Atividade</th>
-                  <th style="width:90px;border:1px solid #cbd5e1;padding:4px;">Responsável</th>
-                  <th style="width:100px;border:1px solid #cbd5e1;padding:4px;">Período</th>
-                  <th style="width:50px;border:1px solid #cbd5e1;padding:4px;">Progresso</th>
-                  ${weekHeaders}
+                <tr>
+                  <th style="width:36px">Etapa</th>
+                  <th>Etapa & Escopo da Atividade</th>
+                  <th style="max-width:100px">Responsáveis</th>
+                  <th style="text-align:center;width:65px">Início</th>
+                  <th style="text-align:center;width:65px">Fim</th>
+                  <th style="width:80px">Progresso</th>
+                  ${dayHeaders}
                 </tr>
               </thead>
-              <tbody>
-                ${taskRows}
-              </tbody>
+              <tbody>${taskRows}</tbody>
             </table>
           </div>`;
       });
 
-      const bodyHtml = `
-        <div style="font-family:Arial,sans-serif;color:#1e293b;padding:12px;font-size:10px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0284c7;padding-bottom:8px;margin-bottom:12px;">
-            <div>
-              <h1 style="font-size:16px;font-weight:900;color:#0284c7;margin:0 0 2px 0;">CRONOGRAMA GANTT SEMANAL DE OBRAS</h1>
-              <div style="font-size:10px;color:#64748b;">Natura Ecoparque — Projetos CIA (ADM, Passarela, Resíduos & DML)</div>
-            </div>
-            <div style="text-align:right;font-size:9px;color:#64748b;">
-              <div>Gerado em: <strong>${dateStr} às ${timeStr}</strong></div>
-              <div style="color:#0284c7;font-weight:bold;">Linha do Tempo: 11 Semanas (28/09 a 13/12/2026)</div>
-            </div>
-          </div>
-          ${sectionsHtml}
-        </div>`;
+      const body = `
+        ${pdfHeader(`Cronograma de Obra — ${monthTitle}/${year}`, 'Planejamento Físico Operacional por Frente de Obra', dateStr, timeStr)}
+        ${legendHtml}
+        ${sectionsHtml}
+        ${pdfFooter(dateStr, timeStr)}`;
 
-      openPdfPrintPreview('Cronograma_Semanal_Natura_' + now.toISOString().slice(0, 10), bodyHtml, true);
+      openPdfWindow(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Cronograma – Obra Natura</title><style>${pdfBaseStyles()} .section-block { page-break-inside: avoid; }</style></head><body>${body}</body></html>`);
     }
 
+    // ---- PDF: MATERIAIS ----
     function generatePdfMateriais() {
       const now = new Date();
       const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -26770,499 +26259,6 @@
       bodyContainer.innerHTML = html;
     }
 
-    
-    // =========================================================================
-    // SISTEMA DE PRODUÇÃO POR SERVIÇO & QUANTIA DE DINHEIRO
-    // =========================================================================
-    function getProducaoStatusConfig(status) {
-      const s = (status || '').toLowerCase();
-      if (s === 'cumprida') {
-        return {
-          label: 'Cumprida',
-          icon: '✅',
-          badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-bold',
-          colorHex: '#059669',
-          isDone: true
-        };
-      } else if (s === 'nao_cumprida' || s === 'nao-cumprida' || s === 'não cumprida') {
-        return {
-          label: 'Não Cumprida',
-          icon: '❌',
-          badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30 font-bold',
-          colorHex: '#e11d48',
-          isDone: false
-        };
-      }
-      return {
-        label: 'Em Andamento',
-        icon: '⏳',
-        badgeClass: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold',
-        colorHex: '#d97706',
-        isDone: false
-      };
-    }
-
-    function switchFaltasSubView(view) {
-      currentFaltasSubView = view;
-      const secProd = document.getElementById('sec-producao-servico');
-      const secPres = document.getElementById('sec-presenca-ocorrencias');
-      const btnProd = document.getElementById('subtab-btn-producao');
-      const btnCham = document.getElementById('subtab-btn-chamada');
-      const btnFlt = document.getElementById('subtab-btn-faltas');
-      const btnAll = document.getElementById('subtab-btn-todos');
-      const hint = document.getElementById('subtab-summary-hint');
-
-      const activeClass = "px-3 py-1.5 rounded-xl font-black text-xs transition card-bg text-emerald-600 shadow-sm border border-emerald-500/30 flex items-center gap-1.5 cursor-pointer";
-      const inactiveClass = "px-3 py-1.5 rounded-xl font-bold text-xs transition opacity-70 hover:opacity-100 flex items-center gap-1.5 cursor-pointer";
-
-      if (btnProd) btnProd.className = view === 'producao' ? activeClass : inactiveClass;
-      if (btnCham) btnCham.className = view === 'chamada' ? activeClass : inactiveClass;
-      if (btnFlt) btnFlt.className = view === 'faltas' ? activeClass : inactiveClass;
-      if (btnAll) btnAll.className = view === 'todos' ? activeClass : inactiveClass;
-
-      if (view === 'producao') {
-        if (secProd) secProd.classList.remove('hidden');
-        if (secPres) secPres.classList.add('hidden');
-        if (hint) hint.innerText = "💰 Gerenciamento de Produção por Serviço & Metas";
-      } else if (view === 'chamada') {
-        if (secProd) secProd.classList.add('hidden');
-        if (secPres) secPres.classList.remove('hidden');
-        if (hint) hint.innerText = "📅 Diário de Presença Rápida da Equipe";
-      } else if (view === 'faltas') {
-        if (secProd) secProd.classList.add('hidden');
-        if (secPres) secPres.classList.remove('hidden');
-        if (hint) hint.innerText = "📋 Histórico de Faltas, Atestados e Ocorrências";
-      } else {
-        if (secProd) secProd.classList.remove('hidden');
-        if (secPres) secPres.classList.remove('hidden');
-        if (hint) hint.innerText = "📊 Visão Geral Consolidada: Presença, Faltas & Produção";
-      }
-    }
-
-    function saveProducao() {
-      localStorage.setItem(STORAGE_PRODUCAO_KEY, JSON.stringify(producaoItems));
-      recordSave();
-    }
-
-    function setProducaoFilter(filter) {
-      currentProducaoFilter = filter;
-      ['todos', 'cumprida', 'em_andamento', 'nao_cumprida'].forEach(f => {
-        const btn = document.getElementById(`prod-flt-btn-${f}`);
-        if (btn) {
-          if (f === filter) {
-            btn.className = "px-2 py-0.5 rounded text-[11px] font-bold border card-bg text-emerald-600 shadow-sm cursor-pointer";
-          } else {
-            btn.className = "px-2 py-0.5 rounded text-[11px] font-semibold opacity-70 hover:opacity-100 cursor-pointer";
-          }
-        }
-      });
-      renderProducaoTable();
-    }
-
-    function renderProducaoSection() {
-      // 1. Preencher dropdown de filtro por colaborador
-      const filterWorker = document.getElementById('producao-filter-worker');
-      if (filterWorker) {
-        const curVal = filterWorker.value;
-        let opts = `<option value="todos">Todos os Executores (${projectOwners.length})</option>`;
-        projectOwners.forEach(o => {
-          const name = getOwnerName(o);
-          const cargo = getOwnerCargo(o);
-          opts += `<option value="${escapeHtml(name)}">${escapeHtml(name)} (${escapeHtml(cargo)})</option>`;
-        });
-        filterWorker.innerHTML = opts;
-        filterWorker.value = curVal || 'todos';
-      }
-
-      // 2. Preencher selects no modal de produção
-      const modalWorker = document.getElementById('producao-input-worker');
-      if (modalWorker) {
-        let opts = `<option value="">-- Selecione o colaborador --</option>`;
-        projectOwners.forEach(o => {
-          const name = getOwnerName(o);
-          const cargo = getOwnerCargo(o);
-          const cInfo = getCargoInfo(cargo);
-          opts += `<option value="${escapeHtml(name)}">${cInfo.icon} ${escapeHtml(name)} (${escapeHtml(cargo)})</option>`;
-        });
-        modalWorker.innerHTML = opts;
-      }
-
-      const modalFrente = document.getElementById('producao-input-frente');
-      if (modalFrente) {
-        let opts = `<option value="Geral da Obra">Geral da Obra</option>`;
-        (projectData || []).forEach(sec => {
-          opts += `<option value="${escapeHtml(sec.title)}">Frente ${sec.priority}: ${escapeHtml(sec.title)}</option>`;
-        });
-        modalFrente.innerHTML = opts;
-      }
-
-      // 3. Atualizar badges de contagem na sub-navegação
-      const badgeProd = document.getElementById('badge-count-producao');
-      if (badgeProd) badgeProd.innerText = (producaoItems || []).length;
-
-      const badgeFlt = document.getElementById('badge-count-faltas');
-      if (badgeFlt) badgeFlt.innerText = (faltasItems || []).length;
-
-      // 4. Calcular KPIs de Dinheiro e Metas
-      let totalValor = 0;
-      let totalCount = (producaoItems || []).length;
-      let cumpridasValor = 0, cumpridasCount = 0;
-      let andamentoValor = 0, andamentoCount = 0;
-      let naocumpridasValor = 0, naocumpridasCount = 0;
-
-      (producaoItems || []).forEach(it => {
-        const v = Number(it.valor) || 0;
-        totalValor += v;
-        const st = (it.status || 'em_andamento').toLowerCase();
-        if (st === 'cumprida') {
-          cumpridasValor += v;
-          cumpridasCount++;
-        } else if (st === 'nao_cumprida') {
-          naocumpridasValor += v;
-          naocumpridasCount++;
-        } else {
-          andamentoValor += v;
-          andamentoCount++;
-        }
-      });
-
-      const taxaCumprida = totalCount > 0 ? Math.round((cumpridasCount / totalCount) * 100) : 0;
-
-      const elTotVal = document.getElementById('kpi-prod-total-valor');
-      const elTotCnt = document.getElementById('kpi-prod-total-count');
-      const elTaxa = document.getElementById('kpi-prod-taxa');
-      const elCumpVal = document.getElementById('kpi-prod-cumpridas-valor');
-      const elCumpCnt = document.getElementById('kpi-prod-cumpridas-count');
-      const elAndVal = document.getElementById('kpi-prod-andamento-valor');
-      const elAndCnt = document.getElementById('kpi-prod-andamento-count');
-      const elNaoVal = document.getElementById('kpi-prod-naocumpridas-valor');
-      const elNaoCnt = document.getElementById('kpi-prod-naocumpridas-count');
-
-      if (elTotVal) elTotVal.innerText = formatBRL(totalValor);
-      if (elTotCnt) elTotCnt.innerText = `${totalCount} serviço(s) cadastrado(s)`;
-      if (elTaxa) elTaxa.innerText = `${taxaCumprida}% cumpridas`;
-
-      if (elCumpVal) elCumpVal.innerText = formatBRL(cumpridasValor);
-      if (elCumpCnt) elCumpCnt.innerText = `${cumpridasCount} serviço(s) cumprido(s)`;
-
-      if (elAndVal) elAndVal.innerText = formatBRL(andamentoValor);
-      if (elAndCnt) elAndCnt.innerText = `${andamentoCount} serviço(s) em andamento`;
-
-      if (elNaoVal) elNaoVal.innerText = formatBRL(naocumpridasValor);
-      if (elNaoCnt) elNaoCnt.innerText = `${naocumpridasCount} serviço(s) não cumprido(s)`;
-
-      // 5. Renderizar Tabela
-      renderProducaoTable();
-    }
-
-    function renderProducaoTable() {
-      const tbody = document.getElementById('producao-table-body');
-      const tfoot = document.getElementById('producao-table-footer');
-      if (!tbody) return;
-
-      const searchInput = document.getElementById('producao-search-input');
-      const searchTxt = (searchInput ? searchInput.value : '').toLowerCase().trim();
-
-      const workerSelect = document.getElementById('producao-filter-worker');
-      const selectedWorker = (workerSelect ? workerSelect.value : 'todos').toLowerCase();
-
-      let list = [...(producaoItems || [])];
-
-      if (searchTxt) {
-        list = list.filter(p => {
-          return (p.workerName || '').toLowerCase().includes(searchTxt) ||
-                 (p.cargo || '').toLowerCase().includes(searchTxt) ||
-                 (p.servico || '').toLowerCase().includes(searchTxt) ||
-                 (p.frente || '').toLowerCase().includes(searchTxt) ||
-                 (p.observacoes || '').toLowerCase().includes(searchTxt);
-        });
-      }
-
-      if (selectedWorker !== 'todos') {
-        list = list.filter(p => (p.workerName || '').toLowerCase() === selectedWorker);
-      }
-
-      if (currentProducaoFilter !== 'todos') {
-        list = list.filter(p => (p.status || 'em_andamento').toLowerCase() === currentProducaoFilter);
-      }
-
-      // Ordenar por data (início mais recente)
-      list.sort((a, b) => (b.dataInicio || '').localeCompare(a.dataInicio || ''));
-
-      if (list.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="p-8 text-center opacity-60 text-xs italic">
-              Nenhum serviço de produção encontrado com os filtros selecionados.
-            </td>
-          </tr>
-        `;
-        if (tfoot) tfoot.innerHTML = '';
-        return;
-      }
-
-      let sumFilteredValor = 0;
-      let sumFilteredCumprido = 0;
-
-      tbody.innerHTML = list.map(item => {
-        const v = Number(item.valor) || 0;
-        sumFilteredValor += v;
-        const stCfg = getProducaoStatusConfig(item.status);
-        if (stCfg.isDone) sumFilteredCumprido += v;
-
-        const cInfo = getCargoInfo(item.cargo);
-
-        // Formatação das datas de início e fim
-        let inicioStr = item.dataInicio || '-';
-        let fimStr = item.dataFim || '-';
-        if (item.dataInicio && item.dataInicio.includes('-')) {
-          const [y, m, d] = item.dataInicio.split('-');
-          inicioStr = `${d}/${m}/${y}`;
-        }
-        if (item.dataFim && item.dataFim.includes('-')) {
-          const [y, m, d] = item.dataFim.split('-');
-          fimStr = `${d}/${m}/${y}`;
-        }
-
-        // Cálculo de duração em dias
-        let duracaoStr = '-';
-        if (item.dataInicio && item.dataFim) {
-          const dt1 = new Date(item.dataInicio);
-          const dt2 = new Date(item.dataFim);
-          const diffDays = Math.max(1, Math.round((dt2 - dt1) / (1000 * 60 * 60 * 24)) + 1);
-          duracaoStr = `${diffDays} dia(s)`;
-        }
-
-        return `
-          <tr class="hover:bg-slate-500/5 transition">
-            <td class="p-2.5 pl-3">
-              <div class="flex items-center gap-2">
-                <span class="text-base">${cInfo.icon}</span>
-                <div>
-                  <span class="font-extrabold text-xs block leading-tight">${escapeHtml(item.workerName)}</span>
-                  <span class="text-[9.5px] px-1.5 py-0.2 rounded font-bold ${cInfo.color}">${escapeHtml(item.cargo || 'Executor')}</span>
-                </div>
-              </div>
-            </td>
-            <td class="p-2.5">
-              <div class="font-bold text-xs text-slate-800 dark:text-slate-100">${escapeHtml(item.servico)}</div>
-              ${item.qtdMeta ? `<div class="text-[10px] text-sky-600 dark:text-sky-400 font-semibold mt-0.5">Meta: ${escapeHtml(item.qtdMeta)}</div>` : ''}
-              ${item.observacoes ? `<div class="text-[10px] opacity-60 italic mt-0.5 truncate max-w-sm" title="${escapeHtml(item.observacoes)}">${escapeHtml(item.observacoes)}</div>` : ''}
-            </td>
-            <td class="p-2.5">
-              <span class="text-[10.5px] opacity-80 px-2 py-0.5 rounded sub-box border inline-block truncate max-w-[140px]" title="${escapeHtml(item.frente || 'Geral')}">
-                ${escapeHtml(item.frente || 'Geral da Obra')}
-              </span>
-            </td>
-            <td class="p-2.5 text-center whitespace-nowrap">
-              <div class="text-[11px] font-bold text-slate-700 dark:text-slate-200">${inicioStr} ➔ ${fimStr}</div>
-              <span class="text-[9px] opacity-60">Início e Fim</span>
-            </td>
-            <td class="p-2.5 text-center">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-500/10 text-slate-600 dark:text-slate-300 border border-slate-500/20">
-                ${duracaoStr}
-              </span>
-            </td>
-            <td class="p-2.5 text-right whitespace-nowrap">
-              <span class="font-black text-xs text-emerald-600 dark:text-emerald-400">R$ ${formatBRL(v)}</span>
-            </td>
-            <td class="p-2.5 text-center whitespace-nowrap">
-              <button onclick="cycleProducaoStatus('${item.id}')" title="Clique para alternar: Cumprida ➔ Não Cumprida ➔ Em Andamento" class="text-[10.5px] px-2.5 py-1 rounded-full inline-flex items-center gap-1.5 cursor-pointer hover:scale-105 transition shadow-xs ${stCfg.badgeClass}">
-                <span>${stCfg.icon}</span>
-                <span>${stCfg.label}</span>
-              </button>
-            </td>
-            <td class="p-2.5 text-center no-print whitespace-nowrap">
-              <div class="flex items-center justify-center gap-1">
-                <button onclick="openLancarProducaoModal('${item.id}')" class="p-1 text-sky-600 hover:text-sky-800 rounded transition cursor-pointer" title="Editar produção">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                </button>
-                <button onclick="deleteProducaoRecord('${item.id}')" class="p-1 text-rose-500 hover:text-rose-700 rounded transition cursor-pointer" title="Excluir produção">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      if (tfoot) {
-        tfoot.innerHTML = `
-          <tr>
-            <td colspan="5" class="p-3 pl-3 text-right text-xs uppercase tracking-wider font-extrabold">
-              Total Filtrado (${list.length} serviços):
-            </td>
-            <td class="p-3 text-right font-black text-sm text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
-              R$ ${formatBRL(sumFilteredValor)}
-            </td>
-            <td colspan="2" class="p-3 text-center text-[11px] opacity-80 whitespace-nowrap">
-              Cumprido: <strong class="text-emerald-600">R$ ${formatBRL(sumFilteredCumprido)}</strong>
-            </td>
-          </tr>
-        `;
-      }
-    }
-
-    function cycleProducaoStatus(id) {
-      const item = (producaoItems || []).find(p => p.id === id);
-      if (!item) return;
-
-      const cur = (item.status || 'em_andamento').toLowerCase();
-      if (cur === 'em_andamento') item.status = 'cumprida';
-      else if (cur === 'cumprida') item.status = 'nao_cumprida';
-      else item.status = 'em_andamento';
-
-      saveProducao();
-      renderProducaoSection();
-      if (typeof showSyncToast === 'function') {
-        const cfg = getProducaoStatusConfig(item.status);
-        showSyncToast(`${cfg.icon} Produção marcada como "${cfg.label}"!`);
-      }
-    }
-
-    function openLancarProducaoModal(id = null, preselectedWorker = null) {
-      const titleEl = document.getElementById('modal-producao-title');
-      const formId = document.getElementById('producao-form-id');
-      const workerSelect = document.getElementById('producao-input-worker');
-      const servicoInput = document.getElementById('producao-input-servico');
-      const frenteSelect = document.getElementById('producao-input-frente');
-      const dataInicioInput = document.getElementById('producao-input-datainicio');
-      const dataFimInput = document.getElementById('producao-input-datafim');
-      const valorInput = document.getElementById('producao-input-valor');
-      const qtdInput = document.getElementById('producao-input-qtd');
-      const statusSelect = document.getElementById('producao-input-status');
-      const obsInput = document.getElementById('producao-input-obs');
-
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, '0');
-      const d = String(now.getDate()).padStart(2, '0');
-      const hoje = `${y}-${m}-${d}`;
-
-      if (id) {
-        const item = (producaoItems || []).find(p => p.id === id);
-        if (item) {
-          if (titleEl) titleEl.innerText = 'Editar Produção por Serviço';
-          if (formId) formId.value = item.id;
-          if (workerSelect) workerSelect.value = item.workerName || '';
-          if (servicoInput) servicoInput.value = item.servico || '';
-          if (frenteSelect) frenteSelect.value = item.frente || 'Geral da Obra';
-          if (dataInicioInput) dataInicioInput.value = item.dataInicio || hoje;
-          if (dataFimInput) dataFimInput.value = item.dataFim || hoje;
-          if (valorInput) valorInput.value = item.valor || '';
-          if (qtdInput) qtdInput.value = item.qtdMeta || '';
-          if (statusSelect) statusSelect.value = item.status || 'em_andamento';
-          if (obsInput) obsInput.value = item.observacoes || '';
-        }
-      } else {
-        if (titleEl) titleEl.innerText = 'Lançar Produção por Serviço';
-        if (formId) formId.value = '';
-        if (workerSelect) {
-          if (preselectedWorker) workerSelect.value = preselectedWorker;
-          else if (workerSelect.options && workerSelect.options.length > 1) workerSelect.selectedIndex = 1;
-        }
-        if (servicoInput) servicoInput.value = '';
-        if (frenteSelect && frenteSelect.options && frenteSelect.options.length > 0) frenteSelect.selectedIndex = 0;
-        if (dataInicioInput) dataInicioInput.value = hoje;
-        if (dataFimInput) {
-          const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-          const ny = nextWeek.getFullYear();
-          const nm = String(nextWeek.getMonth() + 1).padStart(2, '0');
-          const nd = String(nextWeek.getDate()).padStart(2, '0');
-          dataFimInput.value = `${ny}-${nm}-${nd}`;
-        }
-        if (valorInput) valorInput.value = '';
-        if (qtdInput) qtdInput.value = '';
-        if (statusSelect) statusSelect.value = 'em_andamento';
-        if (obsInput) obsInput.value = '';
-      }
-
-      document.getElementById('modal-lancar-producao').classList.remove('hidden');
-      setTimeout(() => { if (servicoInput) servicoInput.focus(); }, 100);
-    }
-
-    function closeLancarProducaoModal() {
-      const modal = document.getElementById('modal-lancar-producao');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function handleSaveProducaoForm(e) {
-      e.preventDefault();
-      const formId = document.getElementById('producao-form-id').value;
-      const workerName = document.getElementById('producao-input-worker').value;
-      const frente = document.getElementById('producao-input-frente').value;
-      const servico = document.getElementById('producao-input-servico').value.trim();
-      const dataInicio = document.getElementById('producao-input-datainicio').value;
-      const dataFim = document.getElementById('producao-input-datafim').value;
-      const valor = parseFloat(document.getElementById('producao-input-valor').value) || 0;
-      const qtdMeta = document.getElementById('producao-input-qtd').value.trim();
-      const status = document.getElementById('producao-input-status').value;
-      const observacoes = document.getElementById('producao-input-obs').value.trim();
-
-      if (!workerName || !servico || !dataInicio || !dataFim) {
-        alert('Por favor, preencha todos os campos obrigatórios (Colaborador, Serviço, Data Início e Fim).');
-        return;
-      }
-
-      const ownerObj = projectOwners.find(o => getOwnerName(o).toLowerCase() === workerName.toLowerCase());
-      const cargo = ownerObj ? getOwnerCargo(ownerObj) : 'Executor';
-
-      if (formId) {
-        const item = (producaoItems || []).find(p => p.id === formId);
-        if (item) {
-          item.workerName = workerName;
-          item.cargo = cargo;
-          item.frente = frente;
-          item.servico = servico;
-          item.dataInicio = dataInicio;
-          item.dataFim = dataFim;
-          item.valor = valor;
-          item.qtdMeta = qtdMeta;
-          item.status = status;
-          item.observacoes = observacoes;
-          item.updatedAt = new Date().toISOString();
-        }
-      } else {
-        producaoItems.unshift({
-          id: 'prod_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-          workerName,
-          cargo,
-          frente,
-          servico,
-          dataInicio,
-          dataFim,
-          valor,
-          qtdMeta,
-          status,
-          observacoes,
-          timestamp: new Date().toISOString()
-        });
-      }
-
-      saveProducao();
-      closeLancarProducaoModal();
-      renderProducaoSection();
-      if (typeof showSyncToast === 'function') {
-        showSyncToast(`💰 Produção de "${servico}" salva com sucesso!`);
-      }
-    }
-
-    function deleteProducaoRecord(id) {
-      const item = (producaoItems || []).find(p => p.id === id);
-      if (!item) return;
-
-      if (!confirm(`Deseja realmente excluir o serviço de produção "${item.servico}" de ${item.workerName}?`)) {
-        return;
-      }
-
-      producaoItems = (producaoItems || []).filter(p => p.id !== id);
-      saveProducao();
-      renderProducaoSection();
-      if (typeof showSyncToast === 'function') {
-        showSyncToast('Produção excluída.');
-      }
-    }
-
     // =========================================================================
     // SISTEMA DE GESTÃO DE FALTAS & FREQUÊNCIA DOS EXECUTORES
     // =========================================================================
@@ -27421,7 +26417,6 @@
       // 5. Renderizar a chamada e a tabela
       renderChamadaDiaria();
       renderFaltasTable();
-      renderProducaoSection();
       updateFaltasBadge();
     }
 
@@ -27836,41 +26831,6 @@
       const totalDiasHomemBase = totalTrabalhadores * 20;
       const assiduidadePct = Math.max(0, Math.min(100, Math.round(((totalDiasHomemBase - diasPerdidos) / totalDiasHomemBase) * 100)));
 
-      let prodRows = '';
-      let totalProdVal = 0;
-      let totalProdCumprido = 0;
-      if ((producaoItems || []).length === 0) {
-        prodRows = '<tr><td colspan="7" style="text-align:center;padding:15px;color:#64748b;font-style:italic">Nenhum serviço de produção cadastrado no momento.</td></tr>';
-      } else {
-        prodRows = (producaoItems || []).map(p => {
-          const v = Number(p.valor) || 0;
-          totalProdVal += v;
-          const stCfg = getProducaoStatusConfig(p.status);
-          if (stCfg.isDone) totalProdCumprido += v;
-          let ini = p.dataInicio || '-';
-          let fim = p.dataFim || '-';
-          if (p.dataInicio && p.dataInicio.includes('-')) {
-            const [y, m, d] = p.dataInicio.split('-');
-            ini = `${d}/${m}/${y}`;
-          }
-          if (p.dataFim && p.dataFim.includes('-')) {
-            const [y, m, d] = p.dataFim.split('-');
-            fim = `${d}/${m}/${y}`;
-          }
-          return `
-            <tr>
-              <td style="font-weight:bold">${escapeHtml(p.workerName)} <span style="font-size:9px;color:#64748b">(${escapeHtml(p.cargo || 'Executor')})</span></td>
-              <td><strong>${escapeHtml(p.servico)}</strong>${p.qtdMeta ? `<div style="font-size:9px;color:#0284c7">Meta: ${escapeHtml(p.qtdMeta)}</div>` : ''}</td>
-              <td>${escapeHtml(p.frente || 'Geral')}</td>
-              <td style="text-align:center">${ini} ➔ ${fim}</td>
-              <td style="text-align:right;font-weight:bold;color:#059669">R$ ${formatBRL(v)}</td>
-              <td style="text-align:center;font-weight:bold;color:${stCfg.colorHex}">${stCfg.icon} ${stCfg.label}</td>
-              <td style="font-size:9px;color:#64748b">${escapeHtml(p.observacoes || '-')}</td>
-            </tr>
-          `;
-        }).join('');
-      }
-
       let tableRows = '';
       if ((faltasItems || []).length === 0) {
         tableRows = `<tr><td colspan="6" style="text-align:center;padding:20px;color:#64748b;font-style:italic">Nenhuma ocorrência de falta registrada no período. Equipe 100% presente!</td></tr>`;
@@ -27930,29 +26890,6 @@
           </tbody>
         </table>
 
-        <h2 style="margin-top:24px">💰 Produção por Serviço, Quantias (R$) & Cumprimento</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Colaborador</th>
-              <th>Serviço / Atividade</th>
-              <th>Frente</th>
-              <th style="text-align:center">Início ➔ Fim</th>
-              <th style="text-align:right">Quantia (R$)</th>
-              <th style="text-align:center">Cumprida?</th>
-              <th>Observações</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${prodRows}
-            <tr style="background:#f1f5f9;font-weight:bold">
-              <td colspan="4" style="text-align:right">Total em Produção:</td>
-              <td style="text-align:right;color:#059669">R$ ${formatBRL(totalProdVal)}</td>
-              <td colspan="2" style="text-align:center">Cumprido: R$ ${formatBRL(totalProdCumprido)}</td>
-            </tr>
-          </tbody>
-        </table>
-
         <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: center; font-size: 10px; color: #475569;">
           <div>
             <div style="border-bottom: 1px solid #94a3b8; height: 35px; margin-bottom: 6px;"></div>
@@ -27980,276 +26917,7 @@
     // =========================================================================
     // SISTEMA DE SINCRONIZAÇÃO, SALVAMENTO & BACKUP PORTÁTIL
     // =========================================================================
-    
-    // =========================================================================
-    // SISTEMA DE SINCRONIZAÇÃO EM NUVEM (GOOGLE FIREBASE REALTIME DATABASE)
-    // =========================================================================
-    const STORAGE_CLOUD_CONFIG_KEY = 'obra_natura_firebase_cloud_v1';
-    const DEFAULT_FIREBASE_CONFIG = {
-      apiKey: "AIzaSyAQg0QpN-mHSs4ilrVAFnJdJaJYMaFnQcw",
-      authDomain: "gerenciador-de-obra-98bf2.firebaseapp.com",
-      databaseURL: "https://gerenciador-de-obra-98bf2-default-rtdb.firebaseio.com",
-      projectId: "gerenciador-de-obra-98bf2",
-      storageBucket: "gerenciador-de-obra-98bf2.firebasestorage.app",
-      messagingSenderId: "704459138224",
-      appId: "1:704459138224:web:1caa342f23662d178fc775"
-    };
-    let isCloudSyncActive = false;
-    let cloudDbRef = null;
-    let isApplyingCloudUpdate = false;
-
-    function initCloudSync() {
-      let config = null;
-      const savedCfg = localStorage.getItem(STORAGE_CLOUD_CONFIG_KEY);
-      if (savedCfg) {
-        try { config = JSON.parse(savedCfg); } catch(e){}
-      }
-      if (!config || !config.databaseURL) {
-        config = DEFAULT_FIREBASE_CONFIG;
-      }
-      if (!config || !config.databaseURL) {
-        updateCloudStatusUI(false);
-        return;
-      }
-
-      try {
-        let config = JSON.parse(savedCfg);
-        if (!config || !config.databaseURL) {
-          updateCloudStatusUI(false);
-          return;
-        }
-
-        // Inicializar Firebase Compat se ainda não inicializado
-        if (typeof firebase !== 'undefined' && firebase.apps) {
-          if (!firebase.apps.length) {
-            firebase.initializeApp(config);
-          }
-          const db = firebase.database();
-          cloudDbRef = db.ref('obra_natura_gerenciador/dados_completos');
-          isCloudSyncActive = true;
-          updateCloudStatusUI(true);
-
-          // Escuta alterações em tempo real vindas de outros computadores/dispositivos
-          cloudDbRef.on('value', snapshot => {
-            const data = snapshot.val();
-            if (!data) return;
-            // Se foi uma alteração remota com timestamp mais novo
-            if (data.exportedAt) {
-              const lastLocalSave = localStorage.getItem('obra_natura_last_autosave_time');
-              if (!lastLocalSave || new Date(data.exportedAt).getTime() > new Date(lastLocalSave).getTime()) {
-                applyIncomingCloudData(data);
-              }
-            }
-          });
-
-          console.log('☁️ Nuvem Firebase conectada com sucesso!');
-        }
-      } catch (err) {
-        console.error('Erro ao conectar ao Firebase:', err);
-        updateCloudStatusUI(false);
-      }
-    }
-
-    function updateCloudStatusUI(connected) {
-      const pill = document.getElementById('cloud-status-pill');
-      const badgeDot = document.getElementById('cloud-badge-dot');
-      const badgeText = document.getElementById('cloud-badge-text');
-      const badgeBtn = document.getElementById('cloud-sync-badge');
-      const connectedPanel = document.getElementById('cloud-connected-panel');
-      const configForm = document.getElementById('cloud-config-form');
-      const input = document.getElementById('cloud-firebase-config-input');
-
-      if (connected) {
-        if (pill) {
-          pill.innerText = "Conectado";
-          pill.className = "text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30";
-        }
-        if (badgeDot) {
-          badgeDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-        }
-        if (badgeText) {
-          badgeText.innerText = "Nuvem: Conectado";
-        }
-        if (badgeBtn) {
-          badgeBtn.className = "flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold cursor-pointer transition border border-emerald-500/30 text-[11px]";
-        }
-        if (connectedPanel) connectedPanel.classList.remove('hidden');
-        if (configForm) configForm.classList.add('hidden');
-      } else {
-        if (pill) {
-          pill.innerText = "Desconectado";
-          pill.className = "text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300";
-        }
-        if (badgeDot) {
-          badgeDot.className = "w-2 h-2 rounded-full bg-slate-400";
-        }
-        if (badgeText) {
-          badgeText.innerText = "Nuvem: Local";
-        }
-        if (badgeBtn) {
-          badgeBtn.className = "flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-300 font-semibold cursor-pointer transition border border-slate-500/20 text-[11px]";
-        }
-        if (connectedPanel) connectedPanel.classList.add('hidden');
-        if (configForm) configForm.classList.remove('hidden');
-      }
-
-      const savedCfg = localStorage.getItem(STORAGE_CLOUD_CONFIG_KEY);
-      if (input && savedCfg && !input.value) {
-        input.value = savedCfg;
-      }
-    }
-
-    function saveCloudFirebaseConfig() {
-      const input = document.getElementById('cloud-firebase-config-input');
-      if (!input || !input.value.trim()) {
-        alert('Por favor, cole as configurações do Firebase.');
-        return;
-      }
-
-      let parsedConfig = null;
-      const raw = input.value.trim();
-
-      try {
-        // Tenta fazer o parse como JSON
-        parsedConfig = JSON.parse(raw);
-      } catch (e) {
-        // Tenta extrair chaves caso o usuário cole o formato JS: const firebaseConfig = { ... }
-        try {
-          const apiKeyMatch = raw.match(/apiKey["']?\s*:\s*["']([^"']+)["']/);
-          const dbUrlMatch = raw.match(/databaseURL["']?\s*:\s*["']([^"']+)["']/);
-          const projIdMatch = raw.match(/projectId["']?\s*:\s*["']([^"']+)["']/);
-          if (apiKeyMatch && (dbUrlMatch || projIdMatch)) {
-            parsedConfig = {
-              apiKey: apiKeyMatch[1],
-              databaseURL: dbUrlMatch ? dbUrlMatch[1] : `https://${projIdMatch[1]}-default-rtdb.firebaseio.com`,
-              projectId: projIdMatch ? projIdMatch[1] : ''
-            };
-          }
-        } catch (err) {}
-      }
-
-      if (!parsedConfig || !parsedConfig.apiKey) {
-        alert('❌ Não foi possível reconhecer as chaves do Firebase. Certifique-se de colar o objeto com "apiKey" e "databaseURL" (ou projectId).');
-        return;
-      }
-
-      if (!parsedConfig.databaseURL && parsedConfig.projectId) {
-        parsedConfig.databaseURL = `https://${parsedConfig.projectId}-default-rtdb.firebaseio.com`;
-      }
-
-      localStorage.setItem(STORAGE_CLOUD_CONFIG_KEY, JSON.stringify(parsedConfig, null, 2));
-
-      try {
-        if (typeof firebase !== 'undefined') {
-          if (!firebase.apps.length) {
-            firebase.initializeApp(parsedConfig);
-          }
-          cloudDbRef = firebase.database().ref('obra_natura_gerenciador/dados_completos');
-          isCloudSyncActive = true;
-          updateCloudStatusUI(true);
-
-          // Enviar os dados atuais imediatamente para a nuvem
-          syncNowToCloud(true);
-          alert('🎉 SUCESSO! Conexão com o Firebase estabelecida!\n\nSeus dados agora são sincronizados automaticamente na nuvem entre todos os computadores conectados.');
-        }
-      } catch (err) {
-        alert('❌ Erro ao conectar ao Firebase: ' + err.message);
-      }
-    }
-
-    function disconnectCloudFirebase() {
-      if (!confirm('Deseja realmente desconectar a sincronização em nuvem deste navegador?')) return;
-      localStorage.removeItem(STORAGE_CLOUD_CONFIG_KEY);
-      isCloudSyncActive = false;
-      cloudDbRef = null;
-      updateCloudStatusUI(false);
-      alert('Sincronização em nuvem desconectada. Os dados continuam salvos normalmente na memória local.');
-    }
-
-    function syncNowToCloud(showFeedback = false) {
-      if (!isCloudSyncActive || !cloudDbRef) {
-        if (showFeedback) alert('Configure o Firebase primeiro para sincronizar com a nuvem.');
-        return;
-      }
-
-      const payload = {
-        app: "Gerenciador Obra Natura",
-        exportedAt: new Date().toISOString(),
-        projectConfig,
-        projectData,
-        projectOwners,
-        depositoItems,
-        comprasItems,
-        financeiroItems,
-        orcamentoPrevisto,
-        faltasItems,
-        producaoItems,
-        diarioItems
-      };
-
-      cloudDbRef.set(payload)
-        .then(() => {
-          if (showFeedback && typeof showSyncToast === 'function') {
-            showSyncToast('☁️ Todos os dados foram sincronizados com a nuvem!');
-          }
-        })
-        .catch(err => {
-          console.error('Erro ao enviar dados para a nuvem:', err);
-          if (showFeedback) alert('Erro ao sincronizar com a nuvem: ' + err.message);
-        });
-    }
-
-    function applyIncomingCloudData(data) {
-      if (isApplyingCloudUpdate) return;
-      isApplyingCloudUpdate = true;
-
-      try {
-        if (data.projectData) projectData = data.projectData;
-        if (data.projectConfig) projectConfig = data.projectConfig;
-        if (data.projectOwners) projectOwners = data.projectOwners;
-        if (data.depositoItems) depositoItems = data.depositoItems;
-        if (data.comprasItems) comprasItems = data.comprasItems;
-        if (data.financeiroItems) financeiroItems = data.financeiroItems;
-        if (data.orcamentoPrevisto) orcamentoPrevisto = data.orcamentoPrevisto;
-        if (data.faltasItems) faltasItems = data.faltasItems;
-        if (data.producaoItems) producaoItems = data.producaoItems;
-        if (data.diarioItems) diarioItems = data.diarioItems;
-
-        // Salvar localmente como espelho
-        localStorage.setItem(STORAGE_DATA_KEY, JSON.stringify(projectData));
-        localStorage.setItem(STORAGE_CONFIG_KEY, JSON.stringify(projectConfig));
-        localStorage.setItem(STORAGE_OWNERS_KEY, JSON.stringify(projectOwners));
-        localStorage.setItem(STORAGE_MAT_DEP_KEY, JSON.stringify(depositoItems));
-        localStorage.setItem(STORAGE_MAT_COM_KEY, JSON.stringify(comprasItems));
-        localStorage.setItem(STORAGE_FINANCEIRO_KEY, JSON.stringify(financeiroItems));
-        localStorage.setItem(STORAGE_ORCAMENTO_KEY, (orcamentoPrevisto || 0).toString());
-        localStorage.setItem(STORAGE_FALTAS_KEY, JSON.stringify(faltasItems));
-        if (typeof STORAGE_PRODUCAO_KEY !== 'undefined') localStorage.setItem(STORAGE_PRODUCAO_KEY, JSON.stringify(producaoItems));
-        if (typeof STORAGE_DIARIO_KEY !== 'undefined' && diarioItems) localStorage.setItem(STORAGE_DIARIO_KEY, JSON.stringify(diarioItems));
-        if (data.exportedAt) localStorage.setItem('obra_natura_last_autosave_time', data.exportedAt);
-
-        // Re-renderizar abas ativas
-        if (typeof renderSheetBody === 'function') renderSheetBody();
-        if (typeof updateKPIs === 'function') updateKPIs();
-        if (typeof renderDashboard === 'function') renderDashboard();
-        if (typeof renderMateriaisTab === 'function') renderMateriaisTab();
-        if (typeof renderFinanceiroTab === 'function') renderFinanceiroTab();
-        if (typeof renderFaltasTab === 'function') renderFaltasTab();
-        if (typeof renderDiarioTab === 'function') renderDiarioTab();
-
-        console.log('☁️ Dados atualizados automaticamente a partir da nuvem!');
-        if (typeof showSyncToast === 'function') {
-          showSyncToast('☁️ Dados atualizados em tempo real pela nuvem!');
-        }
-      } catch (err) {
-        console.error('Erro ao aplicar dados remotos da nuvem:', err);
-      } finally {
-        isApplyingCloudUpdate = false;
-      }
-    }
-
     function openSyncModal() {
-      initCloudSync();
       const modal = document.getElementById('sync-modal');
       const info = document.getElementById('sync-last-save-info');
       const savedTime = localStorage.getItem('obra_natura_last_sync_time') || new Date().toLocaleString('pt-BR');
@@ -28863,14 +27531,12 @@
         if (typeof financeiroItems !== 'undefined') localStorage.setItem(STORAGE_FINANCEIRO_KEY, JSON.stringify(financeiroItems));
         if (typeof orcamentoPrevisto !== 'undefined') localStorage.setItem(STORAGE_ORCAMENTO_KEY, (orcamentoPrevisto || 0).toString());
         if (typeof faltasItems !== 'undefined') localStorage.setItem(STORAGE_FALTAS_KEY, JSON.stringify(faltasItems));
-        if (typeof producaoItems !== 'undefined') localStorage.setItem(STORAGE_PRODUCAO_KEY, JSON.stringify(producaoItems));
         if (typeof diarioItems !== 'undefined') localStorage.setItem(STORAGE_DIARIO_KEY, JSON.stringify(diarioItems));
 
         const now = new Date();
         const timeStr = now.toLocaleTimeString('pt-BR');
         localStorage.setItem('obra_natura_last_autosave_time', now.toISOString());
         localStorage.setItem('obra_natura_last_sync_time', now.toLocaleString('pt-BR'));
-        syncNowToCloud(false);
 
         const timeEl = document.getElementById('save-timestamp');
         if (timeEl) {
