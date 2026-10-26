@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1472,11 +1472,11 @@
 
         <div class="flex items-center gap-2 flex-wrap">
           <div class="flex items-center gap-1 bg-white/80 dark:bg-slate-800/80 p-1 rounded-xl border border-sky-400/40 shadow-xs">
-            <button id="btn-mode-semanal" onclick="setCronogramaTimelineMode('semanal')" class="px-3 py-1.5 rounded-lg text-xs font-black bg-sky-600 text-white shadow-sm transition flex items-center gap-1.5">
-              <span>📊</span> Gantt Semanal Dinâmico
+            <button id="btn-mode-quinzenal" onclick="setCronogramaTimelineMode('quinzenal')" class="px-3 py-1.5 rounded-lg text-xs font-black bg-sky-600 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>📅</span> Cronograma Quinzenal (2 Semanas • Bolinhas)
             </button>
-            <button id="btn-mode-mensal" onclick="setCronogramaTimelineMode('mensal')" class="px-3 py-1.5 rounded-lg text-xs font-semibold opacity-70 hover:opacity-100 transition flex items-center gap-1.5">
-              <span>📅</span> Dias do Mês (1 a 31)
+            <button id="btn-mode-semanal" onclick="setCronogramaTimelineMode('semanal')" class="px-3 py-1.5 rounded-lg text-xs font-semibold opacity-70 hover:opacity-100 transition flex items-center gap-1.5">
+              <span>📊</span> Gantt Semanal Geral (S1 a S11)
             </button>
           </div>
 
@@ -1559,212 +1559,80 @@
                 </div>
               </th>
               
-              <th id="header-month-th" colspan="31" class="border table-cell-border py-1 uppercase text-xs tracking-widest bg-sky-500/10 text-sky-600 dark:text-sky-400">
-                <div id="calendar-controls-container" class="flex items-center justify-between px-2 py-0.5">
-          <button onclick="changeCalendarMonth(-1)" class="px-2 py-0.5 bg-white/40 dark:bg-slate-700/60 hover:bg-white/80 dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-sm" title="Mês Anterior">
-            ◀ <span class="hidden sm:inline text-[11px]">Anterior</span>
-          </button>
-          
-          <div class="flex items-center gap-1.5 py-0.5">
-            <span class="text-sm">🗓️</span>
-            <select id="cal-select-month" onchange="onCalendarSelectChange()" class="bg-white dark:bg-slate-800 text-sky-700 dark:text-sky-300 font-black text-xs px-2 py-0.5 rounded border border-sky-400/40 shadow-sm outline-none cursor-pointer">
-              <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9" selected="">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
-            </select>
-            <select id="cal-select-year" onchange="onCalendarSelectChange()" class="bg-white dark:bg-slate-800 text-sky-700 dark:text-sky-300 font-black text-xs px-2 py-0.5 rounded border border-sky-400/40 shadow-sm outline-none cursor-pointer">
-              <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option>
-            </select>
-            <button onclick="goToCurrentMonth()" class="px-2 py-0.5 bg-sky-600 hover:bg-sky-500 text-white rounded text-[10px] font-bold transition shadow-sm" title="Ir para o mês atual de hoje">
-              Hoje
-            </button>
-          </div>
+              <th id="header-month-th" colspan="14" class="border table-cell-border py-1 uppercase text-xs tracking-widest bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                <div id="calendar-controls-container" class="flex items-center justify-between px-2 py-1 w-full flex-wrap gap-2">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <button onclick="changeQuinzena(-1)" class="px-2 py-0.5 bg-white/70 dark:bg-slate-700/80 hover:bg-white dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-xs border border-sky-300/40" title="Quinzena Anterior">
+                      ◀ <span class="hidden sm:inline text-[10.5px]">Anterior</span>
+                    </button>
+                    
+                    <div class="flex items-center gap-1.5 py-0.5">
+                      <span class="text-sm">📅</span>
+                      <select id="cal-select-quinzena" onchange="onQuinzenaSelectChange()" class="bg-white dark:bg-slate-800 text-sky-800 dark:text-sky-200 font-extrabold text-xs px-2.5 py-1 rounded-lg border border-sky-400/50 shadow-xs outline-none cursor-pointer">
+                        <option value="0">1ª Quinzena (S1 &amp; S2) (28/09 a 11/10/2026)</option>
+                        <option value="1" selected>2ª Quinzena (S3 &amp; S4) • HOJE (12/10 a 25/10/2026)</option>
+                        <option value="2">3ª Quinzena (S5 &amp; S6) (26/10 a 08/11/2026)</option>
+                        <option value="3">4ª Quinzena (S7 &amp; S8) (09/11 a 22/11/2026)</option>
+                        <option value="4">5ª Quinzena (S9 &amp; S10) (23/11 a 06/12/2026)</option>
+                        <option value="5">6ª Quinzena (S11 • Final) (07/12 a 13/12/2026)</option>
+                      </select>
+                    </div>
 
-          <button onclick="changeCalendarMonth(1)" class="px-2 py-0.5 bg-white/40 dark:bg-slate-700/60 hover:bg-white/80 dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-sm" title="Próximo Mês">
-            <span class="hidden sm:inline text-[11px]">Próximo</span> ▶
-          </button>
-        </div>
+                    <button onclick="changeQuinzena(1)" class="px-2 py-0.5 bg-white/70 dark:bg-slate-700/80 hover:bg-white dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-xs border border-sky-300/40" title="Próxima Quinzena">
+                      <span class="hidden sm:inline text-[10.5px]">Próxima</span> ▶
+                    </button>
+
+                    <button onclick="goToCurrentQuinzena()" class="px-2 py-0.5 bg-sky-600 hover:bg-sky-500 text-white rounded text-[10px] font-black transition shadow-xs flex items-center gap-1 ml-1" title="Ir para a Quinzena Vigente de Hoje (Semanas 3 &amp; 4)">
+                      <span>🎯</span> Quinzena Vigente
+                    </button>
+
+                    <button onclick="setCronogramaTimelineMode('semanal')" class="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[10px] font-bold transition shadow-xs ml-1">
+                      📊 Gantt Semanal
+                    </button>
+                  </div>
+
+                  <!-- OPÇÕES E LEGENDA DAS BOLINHAS -->
+                  <div class="flex items-center gap-2 bg-slate-100/90 dark:bg-slate-800/90 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
+                    <span class="font-bold text-[10px] uppercase text-slate-500 dark:text-slate-400">Bolinhas:</span>
+                    <span class="flex items-center gap-1 font-semibold text-amber-600 dark:text-amber-400 text-[10.5px]" title="Bolinha Amarela: Dia planejado na execução">
+                      <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block border border-amber-500"></span> Planejado
+                    </span>
+                    <span class="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400 text-[10.5px]" title="Bolinha Verde: Dia executado/concluído">
+                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block border border-emerald-600"></span> Executado
+                    </span>
+                    <span class="text-[9.5px] opacity-60 hidden md:inline">(Clique na bolinha p/ alternar • 100% fecha tudo de verde)</span>
+                  </div>
+                </div>
               </th>
 
               <th rowspan="3" class="border table-cell-border p-1 w-10 no-print text-[10px]">Ação</th>
             </tr>
 
             <tr class="table-header-sub border-b text-center font-bold text-[10px]" id="periods-header-row">
-          <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
-            Dia 1 - 7
-          </th>
-        
-          <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
-            Dia 8 - 14
-          </th>
-        
-          <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
-            Dia 15 - 21
-          </th>
-        
-          <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
-            Dia 22 - 28
-          </th>
-        
-          <th colspan="3" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
-            Dia 29 - 31
-          </th>
-        </tr>
+              <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-black opacity-90 bg-sky-500/10 text-sky-700 dark:text-sky-300">
+                Semana 3 (12/10 a 18/10) • 7 Dias
+              </th>
+              <th colspan="7" class="border table-cell-border py-1 text-[10px] uppercase font-black opacity-90 bg-sky-500/10 text-sky-700 dark:text-sky-300">
+                Semana 4 (19/10 a 25/10 • HOJE) • 7 Dias
+              </th>
+            </tr>
 
             <tr class="table-header-sub border-b text-center text-[10px] font-bold" id="days-header-row">
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
-            <span class="text-xs font-bold block leading-tight">1</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">2</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">3</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
-            <span class="text-[10px] block opacity-80 leading-tight">D</span>
-            <span class="text-xs font-bold block leading-tight">4</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">5</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">T</span>
-            <span class="text-xs font-bold block leading-tight">6</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
-            <span class="text-xs font-bold block leading-tight">7</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
-            <span class="text-xs font-bold block leading-tight">8</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1 bg-sky-500/20 text-sky-600 font-extrabold border-sky-400 " title=" - Hoje">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">9</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">10</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
-            <span class="text-[10px] block opacity-80 leading-tight">D</span>
-            <span class="text-xs font-bold block leading-tight">11</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">12</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">T</span>
-            <span class="text-xs font-bold block leading-tight">13</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
-            <span class="text-xs font-bold block leading-tight">14</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
-            <span class="text-xs font-bold block leading-tight">15</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">16</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">17</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
-            <span class="text-[10px] block opacity-80 leading-tight">D</span>
-            <span class="text-xs font-bold block leading-tight">18</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">19</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">T</span>
-            <span class="text-xs font-bold block leading-tight">20</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
-            <span class="text-xs font-bold block leading-tight">21</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
-            <span class="text-xs font-bold block leading-tight">22</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">23</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">24</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
-            <span class="text-[10px] block opacity-80 leading-tight">D</span>
-            <span class="text-xs font-bold block leading-tight">25</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">26</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">T</span>
-            <span class="text-xs font-bold block leading-tight">27</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
-            <span class="text-xs font-bold block leading-tight">28</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">Q</span>
-            <span class="text-xs font-bold block leading-tight">29</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  " title=" ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">30</span>
-          </th>
-        
-          <th class="border table-cell-border w-7 py-1  bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold" title="Fim de semana ">
-            <span class="text-[10px] block opacity-80 leading-tight">S</span>
-            <span class="text-xs font-bold block leading-tight">31</span>
-          </th>
-        </tr>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center text-slate-700 dark:text-slate-200"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">S</span><span class="text-xs font-black block">12</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center text-slate-700 dark:text-slate-200"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">T</span><span class="text-xs font-black block">13</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center text-slate-700 dark:text-slate-200"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">Q</span><span class="text-xs font-black block">14</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center text-slate-700 dark:text-slate-200"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">Q</span><span class="text-xs font-black block">15</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center text-slate-700 dark:text-slate-200"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">S</span><span class="text-xs font-black block">16</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center bg-slate-200/50 dark:bg-slate-800/50 text-slate-500 font-semibold"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">S</span><span class="text-xs font-black block">17</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center bg-slate-200/50 dark:bg-slate-800/50 text-slate-500 font-semibold"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">D</span><span class="text-xs font-black block">18</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center bg-sky-500/25 text-sky-700 dark:text-sky-200 font-black border-sky-400"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">S</span><span class="text-xs font-black block">19</span><span class="text-[7.5px] uppercase font-black bg-rose-500 text-white px-1 rounded-xs tracking-tighter mt-0.5">HOJE</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center text-slate-700 dark:text-slate-200"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">T</span><span class="text-xs font-black block">20</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center text-slate-700 dark:text-slate-200"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">Q</span><span class="text-xs font-black block">21</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center text-slate-700 dark:text-slate-200"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">Q</span><span class="text-xs font-black block">22</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center text-slate-700 dark:text-slate-200"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">S</span><span class="text-xs font-black block">23</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center bg-slate-200/50 dark:bg-slate-800/50 text-slate-500 font-semibold"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">S</span><span class="text-xs font-black block">24</span></div></th>
+              <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center bg-slate-200/50 dark:bg-slate-800/50 text-slate-500 font-semibold"><div class="flex flex-col items-center justify-center leading-tight"><span class="text-[9.5px] block opacity-75 font-bold">D</span><span class="text-xs font-black block">25</span></div></th>
+            </tr>
           </thead>
           <tbody id="sheet-body" class="divide-y table-cell-border">
           <tr class="table-header font-bold border-t-2 border-b table-cell-border">
@@ -22820,20 +22688,108 @@
       { num: 11, label: 'S11', dates: '07/12 - 13/12', start: new Date(2026, 11, 7), end: new Date(2026, 11, 13), isCurrent: false, desc: 'Entrega Final ADM & Passarela (10/12)' }
     ];
 
-    let cronogramaTimelineMode = localStorage.getItem('obra_natura_cronograma_timeline_mode') || 'mensal';
+    const OBRA_QUINZENAS = [
+      {
+        id: 1,
+        num: 1,
+        label: '1ª Quinzena • Semanas 1 & 2',
+        shortLabel: '1ª Quinzena (S1 & S2)',
+        datesLabel: '28/09 a 11/10/2026',
+        semana1: 'Semana 1 (28/09 a 04/10)',
+        semana2: 'Semana 2 (05/10 a 11/10)',
+        startDate: new Date(2026, 8, 28),
+        endDate: new Date(2026, 9, 11),
+        isCurrent: false,
+        desc: 'Mobilização & Fundações Iniciais'
+      },
+      {
+        id: 2,
+        num: 2,
+        label: '2ª Quinzena • Semanas 3 & 4 (VIGENTE)',
+        shortLabel: '2ª Quinzena (S3 & S4) • HOJE',
+        datesLabel: '12/10 a 25/10/2026',
+        semana1: 'Semana 3 (12/10 a 18/10)',
+        semana2: 'Semana 4 (19/10 a 25/10 • HOJE)',
+        startDate: new Date(2026, 9, 12),
+        endDate: new Date(2026, 9, 25),
+        isCurrent: true,
+        desc: 'Semana Atual: Alvenarias & 28/33 Sapatas'
+      },
+      {
+        id: 3,
+        num: 3,
+        label: '3ª Quinzena • Semanas 5 & 6',
+        shortLabel: '3ª Quinzena (S5 & S6)',
+        datesLabel: '26/10 a 08/11/2026',
+        semana1: 'Semana 5 (26/10 a 01/11)',
+        semana2: 'Semana 6 (02/11 a 08/11)',
+        startDate: new Date(2026, 9, 26),
+        endDate: new Date(2026, 10, 8),
+        isCurrent: false,
+        desc: 'Montagem Metálica Resíduos & Concretagem ADM'
+      },
+      {
+        id: 4,
+        num: 4,
+        label: '4ª Quinzena • Semanas 7 & 8',
+        shortLabel: '4ª Quinzena (S7 & S8)',
+        datesLabel: '09/11 a 22/11/2026',
+        semana1: 'Semana 7 (09/11 a 15/11 • Entrega Resíduos 13/11)',
+        semana2: 'Semana 8 (16/11 a 22/11 • Passarela/Brises)',
+        startDate: new Date(2026, 10, 9),
+        endDate: new Date(2026, 10, 22),
+        isCurrent: false,
+        desc: 'Entrega Resíduos/DML & Montagem Passarela'
+      },
+      {
+        id: 5,
+        num: 5,
+        label: '5ª Quinzena • Semanas 9 & 10',
+        shortLabel: '5ª Quinzena (S9 & S10)',
+        datesLabel: '23/11 a 06/12/2026',
+        semana1: 'Semana 9 (23/11 a 29/11)',
+        semana2: 'Semana 10 (30/11 a 06/12)',
+        startDate: new Date(2026, 10, 23),
+        endDate: new Date(2026, 11, 6),
+        isCurrent: false,
+        desc: 'Bases Contenção, Calhas & Linha de Vida'
+      },
+      {
+        id: 6,
+        num: 6,
+        label: '6ª Quinzena • Semana 11 (Fechamento)',
+        shortLabel: '6ª Quinzena (S11 • Final)',
+        datesLabel: '07/12 a 13/12/2026',
+        semana1: 'Semana 11 (07/12 a 13/12 • Entrega ADM 10/12)',
+        semana2: 'Fechamento da Obra & Desmobilização',
+        startDate: new Date(2026, 11, 7),
+        endDate: new Date(2026, 11, 20),
+        isCurrent: false,
+        desc: 'Entrega Final ADM, Passarela & Desmobilização'
+      }
+    ];
+
+    let currentQuinzenaIndex = parseInt(localStorage.getItem('obra_natura_current_quinzena') || '1', 10);
+    if (isNaN(currentQuinzenaIndex) || currentQuinzenaIndex < 0 || currentQuinzenaIndex >= OBRA_QUINZENAS.length) {
+      currentQuinzenaIndex = 1;
+    }
+
+    let cronogramaTimelineMode = localStorage.getItem('obra_natura_cronograma_timeline_mode') || 'quinzenal';
+    if (cronogramaTimelineMode === 'mensal') cronogramaTimelineMode = 'quinzenal';
 
     function setCronogramaTimelineMode(mode) {
+      if (mode === 'mensal') mode = 'quinzenal';
       cronogramaTimelineMode = mode;
       localStorage.setItem('obra_natura_cronograma_timeline_mode', mode);
       
       const btnSem = document.getElementById('btn-mode-semanal');
-      const btnMen = document.getElementById('btn-mode-mensal');
-      if (btnSem && btnMen) {
+      const btnQuin = document.getElementById('btn-mode-quinzenal') || document.getElementById('btn-mode-mensal');
+      if (btnSem && btnQuin) {
         if (mode === 'semanal') {
           btnSem.className = "px-3 py-1.5 rounded-lg text-xs font-black bg-sky-600 text-white shadow-sm transition flex items-center gap-1.5";
-          btnMen.className = "px-3 py-1.5 rounded-lg text-xs font-semibold opacity-70 hover:opacity-100 transition flex items-center gap-1.5";
+          btnQuin.className = "px-3 py-1.5 rounded-lg text-xs font-semibold opacity-70 hover:opacity-100 transition flex items-center gap-1.5";
         } else {
-          btnMen.className = "px-3 py-1.5 rounded-lg text-xs font-black bg-sky-600 text-white shadow-sm transition flex items-center gap-1.5";
+          btnQuin.className = "px-3 py-1.5 rounded-lg text-xs font-black bg-sky-600 text-white shadow-sm transition flex items-center gap-1.5";
           btnSem.className = "px-3 py-1.5 rounded-lg text-xs font-semibold opacity-70 hover:opacity-100 transition flex items-center gap-1.5";
         }
       }
@@ -22843,7 +22799,9 @@
       renderSheetBody();
       recordSave();
       if (typeof showSyncToast === 'function') {
-        showSyncToast(mode === 'semanal' ? '📊 Modo Gantt Semanal Dinâmico Ativado (S1 a S11)' : '📅 Modo Calendário Mensal Ativado (Dias 1 a 31)');
+        showSyncToast(mode === 'semanal' 
+          ? '📊 Modo Gantt Semanal Geral Ativado (S1 a S11)' 
+          : '📅 Modo Cronograma Quinzenal Ativado (2 Semanas • 14 Dias com Bolinhas)');
       }
     }
 
@@ -22853,22 +22811,29 @@
       const targetPct = parseInt(val, 10);
       task.progress = targetPct;
 
-      // Sincroniza as bolinhas com a porcentagem clicada
-      if (task.days) {
-        const keys = Object.keys(task.days);
-        if (keys.length > 0) {
-          keys.sort((a, b) => parseInt(a.replace('d', ''), 10) - parseInt(b.replace('d', ''), 10));
-          const greenCount = Math.round(keys.length * (targetPct / 100));
-          keys.forEach((k, idx) => {
-            task.days[k] = idx < greenCount ? 'green' : 'yellow';
-          });
-        }
+      // Sincroniza proporcionalmente as bolinhas dos dias ativos na quinzena
+      const daysList = projectConfig.days || [];
+      const activeDays = daysList.filter(d => {
+        const st = (task.days && (task.days[d.key] || task.days[d.legacyKey]));
+        return st === 'green' || st === 'yellow';
+      });
+
+      if (activeDays.length > 0) {
+        const greenCount = Math.round(activeDays.length * (targetPct / 100));
+        activeDays.forEach((d, idx) => {
+          const nextSt = (targetPct === 100 || idx < greenCount) ? 'green' : 'yellow';
+          task.days[d.key] = nextSt;
+          task.days[d.legacyKey] = nextSt;
+        });
       }
 
       saveData();
       renderSheetBody();
       updateKPIs();
       renderDashboard();
+      if (cronogramaViewMode === 'executores') {
+        renderMirroredSchedule();
+      }
       if (typeof showSyncToast === 'function') {
         showSyncToast(`Progresso atualizado para ${val}% na etapa!`);
       }
@@ -22878,146 +22843,28 @@
       if (!projectData[sIdx] || !projectData[sIdx].tasks[tIdx]) return;
       const t = projectData[sIdx].tasks[tIdx];
       const p = Number(t.progress) || 0;
-      if (p === 0) t.progress = 50;
-      else if (p < 100) t.progress = 100;
-      else t.progress = 0;
-      saveData();
-      renderSheetBody();
-      updateKPIs();
-      renderDashboard();
+      if (p === 0) setTaskProgressQuick(sIdx, tIdx, 50);
+      else if (p < 100) setTaskProgressQuick(sIdx, tIdx, 100);
+      else setTaskProgressQuick(sIdx, tIdx, 0);
     }
 
     function autoSyncAllScheduleDays() {
       projectData.forEach(sec => {
         (sec.tasks || []).forEach(task => {
-          applyAutoDaysForTask(task, calendarYear, calendarMonth);
+          applyAutoDaysForTask(task);
         });
       });
       saveData();
       renderSheetBody();
       updateKPIs();
       renderDashboard();
+      if (cronogramaViewMode === 'executores') {
+        renderMirroredSchedule();
+      }
       if (typeof showSyncToast === 'function') {
-        showSyncToast('⚡ Contagem de dias sincronizada automaticamente com sucesso para todas as etapas!');
+        showSyncToast('🔄 Contagem quinzenal e bolinhas sincronizadas com sucesso para todas as etapas!');
       } else {
-        alert('Contagem de dias sincronizada com sucesso!');
-      }
-    }
-
-    function getTaskDayMetrics(task) {
-      const p = Number(task.progress) || 0;
-      const startStr = (task.start || '').trim();
-      const endStr = (task.end || '').trim();
-
-      if (!startStr || !endStr || startStr === '-' || endStr === '-') {
-        return {
-          hasDates: false,
-          totalDays: 0,
-          elapsedDays: 0,
-          remainingDays: 0,
-          status: 'manual',
-          badgeClass: 'opacity-60 sub-box border text-slate-500',
-          badgeText: 'Sem Datas'
-        };
-      }
-
-      const s = parseSingleDate(startStr, 2026, 9);
-      const e = parseSingleDate(endStr, 2026, 9);
-
-      if (!s || !e) {
-        return {
-          hasDates: false,
-          totalDays: 0,
-          elapsedDays: 0,
-          remainingDays: 0,
-          status: 'manual',
-          badgeClass: 'opacity-60 sub-box border text-slate-500',
-          badgeText: 'Data Inválida'
-        };
-      }
-
-      const realStart = s <= e ? s : e;
-      const realEnd = s <= e ? e : s;
-
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-      const msPerDay = 1000 * 60 * 60 * 24;
-      const totalDays = Math.max(1, Math.round((realEnd - realStart) / msPerDay) + 1);
-
-      if (p === 100) {
-        return {
-          hasDates: true,
-          totalDays,
-          elapsedDays: totalDays,
-          remainingDays: 0,
-          status: 'completed',
-          badgeClass: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 font-bold',
-          badgeText: '✔ 100% Concluída'
-        };
-      }
-
-      if (today < realStart) {
-        const daysToStart = Math.max(1, Math.round((realStart - today) / msPerDay));
-        return {
-          hasDates: true,
-          totalDays,
-          elapsedDays: 0,
-          remainingDays: totalDays,
-          status: 'future',
-          badgeClass: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20 font-semibold',
-          badgeText: `Inicia em ${daysToStart}d`
-        };
-      }
-
-      if (today > realEnd) {
-        const daysLate = Math.max(1, Math.round((today - realEnd) / msPerDay));
-        return {
-          hasDates: true,
-          totalDays,
-          elapsedDays: totalDays,
-          remainingDays: 0,
-          status: 'delayed',
-          badgeClass: 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/50 font-black animate-pulse',
-          badgeText: `ðŸ”´ Atrasado -${daysLate}d`
-        };
-      }
-
-      const elapsedDays = Math.max(1, Math.round((today - realStart) / msPerDay) + 1);
-      const remainingDays = Math.max(0, Math.round((realEnd - today) / msPerDay));
-      const expectedPct = Math.min(100, Math.round((elapsedDays / totalDays) * 100));
-      const variance = p - expectedPct;
-
-      if (variance >= 5) {
-        return {
-          hasDates: true,
-          totalDays,
-          elapsedDays,
-          remainingDays,
-          status: 'ahead',
-          badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-bold',
-          badgeText: `ðŸŸ¢ Adiantada (+${variance}%)`
-        };
-      } else if (variance <= -5) {
-        return {
-          hasDates: true,
-          totalDays,
-          elapsedDays,
-          remainingDays,
-          status: 'behind',
-          badgeClass: 'bg-amber-500/20 text-amber-800 dark:text-amber-200 border border-amber-500/40 font-bold',
-          badgeText: `⚠️ Atenção (${variance}%)`
-        };
-      } else {
-        return {
-          hasDates: true,
-          totalDays,
-          elapsedDays,
-          remainingDays,
-          status: 'ontime',
-          badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-semibold',
-          badgeText: `No Prazo (${remainingDays}d rest.)`
-        };
+        alert('Contagem quinzenal sincronizada com sucesso!');
       }
     }
 
@@ -23059,55 +22906,117 @@
     let calendarMonth = 8; // 8 = Setembro
 
     function initCalendarState() {
-      if (projectConfig.calendarYear) calendarYear = projectConfig.calendarYear;
-      if (projectConfig.calendarMonth !== undefined) calendarMonth = projectConfig.calendarMonth;
-      buildCalendarDays(calendarYear, calendarMonth);
+      buildQuinzenaDays(currentQuinzenaIndex);
+    }
+
+    function buildQuinzenaDays(qIdx) {
+      if (qIdx === undefined || qIdx === null || qIdx < 0 || qIdx >= OBRA_QUINZENAS.length) {
+        qIdx = currentQuinzenaIndex;
+      }
+      currentQuinzenaIndex = qIdx;
+      const q = OBRA_QUINZENAS[qIdx];
+      const startDate = new Date(q.startDate.getTime());
+      const today = new Date();
+      
+      const days = [];
+      // Exatamente 14 dias (2 semanas consecutivas)
+      for (let i = 0; i < 14; i++) {
+        const dt = new Date(startDate.getTime() + i * 86400000);
+        const wdNum = dt.getDay(); // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab
+        const isWeekend = (wdNum === 0 || wdNum === 6);
+        const isToday = (today.getDate() === dt.getDate() && today.getMonth() === dt.getMonth() && today.getFullYear() === dt.getFullYear());
+        
+        const dayNum = String(dt.getDate());
+        const monthNum = String(dt.getMonth() + 1).padStart(2, '0');
+        const formattedDate = `${String(dayNum).padStart(2, '0')}/${monthNum}`;
+        
+        days.push({
+          key: 'd_' + dt.getFullYear() + '_' + monthNum + '_' + String(dayNum).padStart(2, '0'),
+          legacyKey: 'd' + dayNum,
+          dayNum: dayNum,
+          formattedDate: formattedDate,
+          weekday: WEEKDAY_INITIALS[wdNum],
+          isWeekend: isWeekend,
+          isToday: isToday,
+          dateObj: dt,
+          weekIndex: i < 7 ? 1 : 2
+        });
+      }
+
+      projectConfig.days = days;
+      projectConfig.quinzena = q;
+      projectConfig.calendarYear = startDate.getFullYear();
+      projectConfig.calendarMonth = startDate.getMonth();
+      projectConfig.monthTitle = MONTH_NAMES[startDate.getMonth()];
+      projectConfig.periods = [
+        {
+          label: q.semana1 + ' • 7 Dias',
+          span: 7
+        },
+        {
+          label: q.semana2 + ' • 7 Dias',
+          span: 7
+        }
+      ];
     }
 
     function buildCalendarDays(year, month) {
-      const totalDays = new Date(year, month + 1, 0).getDate();
-      const today = new Date();
-      const days = [];
+      buildQuinzenaDays(currentQuinzenaIndex);
+    }
 
-      for (let i = 1; i <= totalDays; i++) {
-        const dt = new Date(year, month, i);
-        const wdNum = dt.getDay(); // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab
-        const isWeekend = (wdNum === 0 || wdNum === 6);
-        const isToday = (today.getFullYear() === year && today.getMonth() === month && today.getDate() === i);
-        days.push({
-          key: 'd' + i,
-          dayNum: String(i),
-          weekday: WEEKDAY_INITIALS[wdNum],
-          isWeekend: isWeekend,
-          isToday: isToday
-        });
+    function changeQuinzena(delta) {
+      currentQuinzenaIndex += delta;
+      if (currentQuinzenaIndex < 0) currentQuinzenaIndex = 0;
+      if (currentQuinzenaIndex >= OBRA_QUINZENAS.length) currentQuinzenaIndex = OBRA_QUINZENAS.length - 1;
+      localStorage.setItem('obra_natura_current_quinzena', currentQuinzenaIndex);
+      onQuinzenaUpdated();
+    }
+
+    function onQuinzenaSelectChange() {
+      const sel = document.getElementById('cal-select-quinzena');
+      if (sel) {
+        currentQuinzenaIndex = parseInt(sel.value, 10);
+        localStorage.setItem('obra_natura_current_quinzena', currentQuinzenaIndex);
+        onQuinzenaUpdated();
       }
+    }
 
-      projectConfig.calendarYear = year;
-      projectConfig.calendarMonth = month;
-      projectConfig.monthTitle = MONTH_NAMES[month];
-      projectConfig.days = days;
+    function goToCurrentQuinzena() {
+      const currIdx = OBRA_QUINZENAS.findIndex(q => q.isCurrent);
+      currentQuinzenaIndex = currIdx >= 0 ? currIdx : 1;
+      localStorage.setItem('obra_natura_current_quinzena', currentQuinzenaIndex);
+      onQuinzenaUpdated();
+    }
 
-      // Gera os períodos em blocos de DUAS SEMANAS (conforme solicitado)
-      const periods = [];
-      // Quinzena 1 / Semanas 1 e 2: Dias 1 a 14 (14 dias = 2 semanas)
-      periods.push({
-        label: 'Semanas 1 & 2 • 2 Semanas (Dias 01 a 14)',
-        span: 14
-      });
-      // Quinzena 2 / Semanas 3 e 4: Dias 15 a 28 (14 dias = 2 semanas)
-      periods.push({
-        label: 'Semanas 3 & 4 • 2 Semanas (Dias 15 a 28)',
-        span: 14
-      });
-      // Fechamento do Mês (Semana 5): Dias 29 até totalDays
-      if (totalDays > 28) {
-        periods.push({
-          label: `Semana 5 • Fechamento (Dias 29 a ${totalDays})`,
-          span: (totalDays - 28)
-        });
+    function onQuinzenaUpdated() {
+      buildQuinzenaDays(currentQuinzenaIndex);
+      applyConfigToHeader();
+      renderDaysHeader();
+      syncAllTasksAutoDays();
+      renderSheetBody();
+      recordSave();
+      if (cronogramaViewMode === 'executores') {
+        renderMirroredSchedule();
       }
-      projectConfig.periods = periods;
+      if (typeof showSyncToast === 'function') {
+        showSyncToast(`Visualizando ${OBRA_QUINZENAS[currentQuinzenaIndex].shortLabel} (${OBRA_QUINZENAS[currentQuinzenaIndex].datesLabel})`);
+      }
+    }
+
+    function changeCalendarMonth(delta) {
+      changeQuinzena(delta);
+    }
+
+    function onCalendarSelectChange() {
+      onQuinzenaSelectChange();
+    }
+
+    function goToCurrentMonth() {
+      goToCurrentQuinzena();
+    }
+
+    function onMonthUpdated() {
+      onQuinzenaUpdated();
     }
 
     function applyConfigToHeader() {
@@ -23128,15 +23037,15 @@
                   <span>📊</span> LINHA DO TEMPO DA OBRA (11 SEMANAS)
                 </span>
                 <span class="px-2 py-0.5 rounded-full text-[9.5px] font-black bg-rose-500 text-white shadow-sm flex items-center gap-1 animate-pulse" title="Semana 4 Atual da Obra">
-                  <span>ðŸ”´</span> SEMANA 4 (19/10/2026) — HOJE
+                  <span>📍</span> SEMANA 4 (19/10/2026) — HOJE
                 </span>
               </div>
               <div class="flex items-center gap-1.5">
-                <button onclick="setCronogramaTimelineMode('mensal')" class="px-2 py-0.5 bg-white/70 dark:bg-slate-700 hover:bg-white text-sky-700 dark:text-sky-200 rounded text-[10.5px] font-bold shadow-sm transition flex items-center gap-1">
-                  <span>📅</span> Ver Dias do Mês (1 a 31)
+                <button onclick="setCronogramaTimelineMode('quinzenal')" class="px-2.5 py-1 bg-white/80 dark:bg-slate-700 hover:bg-white text-sky-700 dark:text-sky-200 rounded-lg text-[10.5px] font-extrabold shadow-sm transition flex items-center gap-1">
+                  <span>📅</span> Ver Cronograma Quinzenal (2 Semanas • Bolinhas)
                 </button>
-                <button onclick="autoSyncAllScheduleDays()" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10.5px] font-bold shadow-sm transition flex items-center gap-1" title="Sincroniza automaticamente contagem de dias úteis e corridos de todas as etapas">
-                  <span>⚡</span> Sincronizar Dias
+                <button onclick="autoSyncAllScheduleDays()" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10.5px] font-bold shadow-sm transition flex items-center gap-1" title="Sincroniza automaticamente contagem de dias úteis e corridos de todas as etapas">
+                  <span>🔄</span> Sincronizar Dias
                 </button>
               </div>
             </div>
@@ -23151,38 +23060,57 @@
           `;
         }
       } else {
-        const totalDays = (projectConfig.days && projectConfig.days.length) ? projectConfig.days.length : 30;
-        if (monthTh) monthTh.colSpan = totalDays;
+        // MODO QUINZENAL (2 Semanas = 14 Dias com opções das bolinhas)
+        if (monthTh) monthTh.colSpan = 14;
         if (controls) {
           controls.innerHTML = `
-            <button onclick="changeCalendarMonth(-1)" class="px-2 py-0.5 bg-white/40 dark:bg-slate-700/60 hover:bg-white/80 dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-sm" title="Mês Anterior">
-              ◀ <span class="hidden sm:inline text-[11px]">Anterior</span>
-            </button>
-            
-            <div class="flex items-center gap-1.5 py-0.5">
-              <span class="text-sm">🗓️</span>
-              <select id="cal-select-month" onchange="onCalendarSelectChange()" class="bg-white dark:bg-slate-800 text-sky-700 dark:text-sky-300 font-black text-xs px-2 py-0.5 rounded border border-sky-400/40 shadow-sm outline-none cursor-pointer">
-                ${MONTH_NAMES.map((m, idx) => `<option value="${idx}" ${idx === calendarMonth ? 'selected' : ''}>${m}</option>`).join('')}
-              </select>
-              <select id="cal-select-year" onchange="onCalendarSelectChange()" class="bg-white dark:bg-slate-800 text-sky-700 dark:text-sky-300 font-black text-xs px-2 py-0.5 rounded border border-sky-400/40 shadow-sm outline-none cursor-pointer">
-                ${[2024, 2025, 2026, 2027, 2028, 2029].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''}>${y}</option>`).join('')}
-              </select>
-              <button onclick="goToCurrentMonth()" class="px-2 py-0.5 bg-sky-600 hover:bg-sky-500 text-white rounded text-[10px] font-bold transition shadow-sm" title="Ir para o mês atual de hoje">
-                Hoje
-              </button>
-              <button onclick="setCronogramaTimelineMode('semanal')" class="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[10px] font-bold transition shadow-sm ml-2">
-                📊 Alternar p/ Gantt Semanal
-              </button>
-            </div>
+            <div class="flex items-center justify-between px-2 py-1 w-full flex-wrap gap-2">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <button onclick="changeQuinzena(-1)" class="px-2 py-0.5 bg-white/70 dark:bg-slate-700/80 hover:bg-white dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-xs border border-sky-300/40" title="Quinzena Anterior">
+                  ◀ <span class="hidden sm:inline text-[10.5px]">Anterior</span>
+                </button>
+                
+                <div class="flex items-center gap-1.5 py-0.5">
+                  <span class="text-sm">📅</span>
+                  <select id="cal-select-quinzena" onchange="onQuinzenaSelectChange()" class="bg-white dark:bg-slate-800 text-sky-800 dark:text-sky-200 font-extrabold text-xs px-2.5 py-1 rounded-lg border border-sky-400/50 shadow-xs outline-none cursor-pointer">
+                    ${OBRA_QUINZENAS.map((item, idx) => `
+                      <option value="${idx}" ${idx === currentQuinzenaIndex ? 'selected' : ''}>
+                        ${item.shortLabel} (${item.datesLabel})
+                      </option>
+                    `).join('')}
+                  </select>
+                </div>
 
-            <button onclick="changeCalendarMonth(1)" class="px-2 py-0.5 bg-white/40 dark:bg-slate-700/60 hover:bg-white/80 dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-sm" title="Próximo Mês">
-              <span class="hidden sm:inline text-[11px]">Próximo</span> ▶
-            </button>
+                <button onclick="changeQuinzena(1)" class="px-2 py-0.5 bg-white/70 dark:bg-slate-700/80 hover:bg-white dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 rounded text-xs font-black transition flex items-center gap-1 shadow-xs border border-sky-300/40" title="Próxima Quinzena">
+                  <span class="hidden sm:inline text-[10.5px]">Próxima</span> ▶
+                </button>
+
+                <button onclick="goToCurrentQuinzena()" class="px-2 py-0.5 bg-sky-600 hover:bg-sky-500 text-white rounded text-[10px] font-black transition shadow-xs flex items-center gap-1 ml-1" title="Ir para a Quinzena Vigente de Hoje (Semanas 3 &amp; 4)">
+                  <span>🎯</span> Quinzena Vigente
+                </button>
+
+                <button onclick="setCronogramaTimelineMode('semanal')" class="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[10px] font-bold transition shadow-xs ml-1">
+                  📊 Gantt Semanal
+                </button>
+              </div>
+
+              <!-- OPÇÕES E LEGENDA DAS BOLINHAS -->
+              <div class="flex items-center gap-2 bg-slate-100/90 dark:bg-slate-800/90 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
+                <span class="font-bold text-[10px] uppercase text-slate-500 dark:text-slate-400">Bolinhas:</span>
+                <span class="flex items-center gap-1 font-semibold text-amber-600 dark:text-amber-400 text-[10.5px]" title="Bolinha Amarela: Dia planejado na execução">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block border border-amber-500"></span> Planejado
+                </span>
+                <span class="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400 text-[10.5px]" title="Bolinha Verde: Dia executado/concluído">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block border border-emerald-600"></span> Executado
+                </span>
+                <span class="text-[9.5px] opacity-60 hidden md:inline">(Clique na bolinha p/ alternar • 100% fecha tudo de verde)</span>
+              </div>
+            </div>
           `;
         }
         if (periodsRow) {
           periodsRow.innerHTML = (projectConfig.periods || []).map(p => `
-            <th colspan="${p.span}" class="border table-cell-border py-1 text-[10px] uppercase font-bold opacity-80 bg-slate-100 dark:bg-slate-800/60">
+            <th colspan="${p.span}" class="border table-cell-border py-1 text-[10px] uppercase font-black opacity-90 bg-sky-500/10 text-sky-700 dark:text-sky-300">
               ${escapeHtml(p.label)}
             </th>
           `).join('');
@@ -23203,7 +23131,7 @@
           return `
             <th class="border table-cell-border min-w-[72px] py-1 text-center ${bgCls}" title="${escapeHtml(w.desc)} (${w.dates})">
               <div class="flex flex-col items-center justify-center leading-tight">
-                <span class="text-[11px] font-black">${w.label} ${isCurrent ? 'ðŸ”´' : ''}</span>
+                <span class="text-[11px] font-black">${w.label} ${isCurrent ? '📍' : ''}</span>
                 <span class="text-[9px] opacity-75">${w.dates}</span>
                 ${isCurrent ? '<span class="text-[8px] uppercase tracking-tighter bg-rose-500 text-white px-1 rounded-sm mt-0.5">HOJE</span>' : ''}
               </div>
@@ -23211,157 +23139,88 @@
           `;
         }).join('');
       } else {
-        tr.innerHTML = (projectConfig.days || []).map((d) => {
-          const isTodayClass = d.isToday ? 'bg-sky-500/20 text-sky-600 font-extrabold border-sky-400' : '';
-          const weekendClass = d.isWeekend ? 'bg-slate-200/40 dark:bg-slate-800/40 text-slate-500 font-semibold' : '';
+        // 14 DIAS DA QUINZENA
+        tr.innerHTML = (projectConfig.days || []).map(d => {
+          const isTodayClass = d.isToday ? 'bg-sky-500/25 text-sky-700 dark:text-sky-200 font-black border-sky-400 ring-2 ring-sky-400/30' : '';
+          const weekendClass = d.isWeekend ? 'bg-slate-200/50 dark:bg-slate-800/50 text-slate-500 font-semibold' : 'text-slate-700 dark:text-slate-200';
           return `
-            <th class="border table-cell-border w-7 py-1 ${isTodayClass} ${weekendClass}" title="${d.isWeekend ? 'Fim de semana' : ''} ${d.isToday ? '- Hoje' : ''}">
-              <span class="text-[10px] block opacity-80 leading-tight">${escapeHtml(d.weekday)}</span>
-              <span class="text-xs font-bold block leading-tight">${escapeHtml(d.dayNum)}</span>
+            <th class="border table-cell-border min-w-[36px] w-9 py-1 text-center ${isTodayClass} ${weekendClass}" title="${d.formattedDate} (${d.weekday}) ${d.isWeekend ? '- Fim de semana' : ''} ${d.isToday ? '- HOJE' : ''}">
+              <div class="flex flex-col items-center justify-center leading-tight">
+                <span class="text-[9.5px] block opacity-75 font-bold">${escapeHtml(d.weekday)}</span>
+                <span class="text-xs font-black block">${escapeHtml(d.dayNum)}</span>
+                ${d.isToday ? '<span class="text-[7.5px] uppercase font-black bg-rose-500 text-white px-1 rounded-xs tracking-tighter mt-0.5">HOJE</span>' : ''}
+              </div>
             </th>
           `;
         }).join('');
       }
     }
 
-    function changeCalendarMonth(delta) {
-      calendarMonth += delta;
-      if (calendarMonth > 11) {
-        calendarMonth = 0;
-        calendarYear++;
-      } else if (calendarMonth < 0) {
-        calendarMonth = 11;
-        calendarYear--;
-      }
-      onMonthUpdated();
-    }
+    function applyAutoDaysForTask(task) {
+      const startStr = (task.start || '').trim();
+      const endStr = (task.end || '').trim();
+      if (!startStr || !endStr || startStr === '-' || endStr === '-') return;
 
-    function onCalendarSelectChange() {
-      const mSel = document.getElementById('cal-select-month');
-      const ySel = document.getElementById('cal-select-year');
-      if (mSel && ySel) {
-        calendarMonth = parseInt(mSel.value, 10);
-        calendarYear = parseInt(ySel.value, 10);
-        onMonthUpdated();
-      }
-    }
-
-    function goToCurrentMonth() {
-      const now = new Date();
-      calendarYear = now.getFullYear();
-      calendarMonth = now.getMonth();
-      onMonthUpdated();
-    }
-
-    function onMonthUpdated() {
-      buildCalendarDays(calendarYear, calendarMonth);
-      applyConfigToHeader();
-      renderDaysHeader();
-      syncAllTasksAutoDays();
-      renderSheetBody();
-      recordSave();
-    }
-
-    function parseDateRange(startStr, endStr, viewYear, viewMonth) {
-      function parseSingleDate(str) {
+      function parsePtDate(str) {
         if (!str) return null;
         str = str.trim();
         if (str.includes('/')) {
           const parts = str.split('/');
-          const day = parseInt(parts[0], 10);
-          const month = parseInt(parts[1], 10) - 1;
-          let yr = viewYear;
-          if (parts[2]) {
-            const rawY = parseInt(parts[2], 10);
-            yr = rawY < 100 ? 2000 + rawY : rawY;
-          }
-          if (isNaN(day) || isNaN(month)) return null;
-          return new Date(yr, month, day);
+          const d = parseInt(parts[0], 10);
+          const m = parseInt(parts[1], 10) - 1;
+          let y = parts[2] ? parseInt(parts[2], 10) : 2026;
+          if (y < 100) y += 2000;
+          if (isNaN(d) || isNaN(m)) return null;
+          return new Date(y, m, d);
         }
-        const dayNum = parseInt(str, 10);
-        if (!isNaN(dayNum) && dayNum >= 1 && dayNum <= 31) {
-          return new Date(viewYear, viewMonth, dayNum);
+        const dNum = parseInt(str, 10);
+        if (!isNaN(dNum) && dNum >= 1 && dNum <= 31) {
+          return new Date(2026, 9, dNum);
         }
         return null;
       }
 
-      const startDate = parseSingleDate(startStr);
-      const endDate = parseSingleDate(endStr);
-
-      if (!startDate || !endDate) return null;
+      const startDate = parsePtDate(startStr);
+      const endDate = parsePtDate(endStr);
+      if (!startDate || !endDate) return;
 
       const realStart = startDate <= endDate ? startDate : endDate;
       const realEnd = startDate <= endDate ? endDate : startDate;
-
-      const monthStart = new Date(viewYear, viewMonth, 1);
-      const totalDays = new Date(viewYear, viewMonth + 1, 0).getDate();
-      const monthEnd = new Date(viewYear, viewMonth, totalDays, 23, 59, 59);
-
-      if (realEnd < monthStart || realStart > monthEnd) {
-        return { startDay: 999, endDay: -1 };
-      }
-
-      const startDay = realStart < monthStart ? 1 : realStart.getDate();
-      const endDay = realEnd > monthEnd ? totalDays : realEnd.getDate();
-
-      return { startDay, endDay };
-    }
-
-    function applyAutoDaysForTask(task, year, month) {
-      const startStr = (task.start || '').trim();
-      const endStr = (task.end || '').trim();
-
-      if (!startStr || !endStr || startStr === '-' || endStr === '-') {
-        return;
-      }
-
-      const range = parseDateRange(startStr, endStr, year, month);
-      if (!range || range.startDay > range.endDay) return;
+      realStart.setHours(0, 0, 0, 0);
+      realEnd.setHours(23, 59, 59, 999);
 
       if (!task.days) task.days = {};
-      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      const daysList = projectConfig.days || [];
       const p = Number(task.progress) || 0;
 
-      // Lista de dias agendados da execução nesta janela
-      const scheduledDays = [];
-      for (let d = 1; d <= totalDays; d++) {
-        if (d >= range.startDay && d <= range.endDay) {
-          scheduledDays.push(d);
+      daysList.forEach(d => {
+        const dt = new Date(d.dateObj.getTime());
+        dt.setHours(12, 0, 0, 0);
+
+        const inRange = (dt >= realStart && dt <= realEnd);
+        const k = d.key;
+        const lk = d.legacyKey;
+
+        // Preserva o que o usuário já clicou e marcou verde
+        if (task.days[k] === 'green' || task.days[lk] === 'green') {
+          task.days[k] = 'green';
+          task.days[lk] = 'green';
+          return;
         }
-      }
 
-      // Se a tarefa já tem dias marcados como verde pelo usuário, preserva
-      const hasExistingGreen = Object.values(task.days).some(v => v === 'green');
-
-      scheduledDays.forEach((d, idx) => {
-        const dayKey = 'd' + d;
-        // Se já está verde, mantém verde!
-        if (task.days[dayKey] === 'green') return;
-
-        // Se a tarefa já está marcada como 100% concluída, preenche com verde
-        if (p === 100) {
-          task.days[dayKey] = 'green';
-        } else if (p > 0 && !hasExistingGreen) {
-          // Preenche proporcionalmente os dias verdes e amarelos
-          const targetGreens = Math.round(scheduledDays.length * (p / 100));
-          task.days[dayKey] = (idx < targetGreens) ? 'green' : 'yellow';
-        } else {
-          // De acordo com a data de execução, as bolinhas já ficam AMARELAS automaticamente!
-          task.days[dayKey] = 'yellow';
+        if (inRange) {
+          if (p === 100) {
+            task.days[k] = 'green';
+            task.days[lk] = 'green';
+          } else {
+            // No período de execução da etapa: as bolinhas já ficam AMARELAS automaticamente!
+            task.days[k] = 'yellow';
+            task.days[lk] = 'yellow';
+          }
         }
       });
 
-      // Remove dias amarelos fora da janela de execução
-      for (let d = 1; d <= totalDays; d++) {
-        const dayKey = 'd' + d;
-        if (d < range.startDay || d > range.endDay) {
-          if (task.days[dayKey] === 'yellow') {
-            delete task.days[dayKey];
-          }
-        }
-      }
-
-      // Recalcula o progresso de acordo com as bolinhas verdes vs amarelas
       if (autoCalcProgress && typeof recalculateTaskProgressFromDays === 'function') {
         task.progress = recalculateTaskProgressFromDays(task);
       }
@@ -23370,7 +23229,7 @@
     function syncAllTasksAutoDays() {
       projectData.forEach(sec => {
         (sec.tasks || []).forEach(task => {
-          applyAutoDaysForTask(task, calendarYear, calendarMonth);
+          applyAutoDaysForTask(task);
         });
       });
     }
@@ -23494,14 +23353,14 @@
         `;
       } else {
         timelineCellHtml = (projectConfig.days || []).map(d => {
-          const status = (task.days && task.days[d.key]) ? task.days[d.key] : 'empty';
+          const status = (task.days && (task.days[d.key] || task.days[d.legacyKey])) ? (task.days[d.key] || task.days[d.legacyKey]) : 'empty';
           let cellClass = 'status-empty';
           if (status === 'green') cellClass = 'status-green';
           else if (status === 'yellow') cellClass = 'status-yellow';
           const todayBorder = d.isToday ? 'border-sky-400 bg-sky-500/10' : 'table-cell-border';
           return `
-            <td class="border ${todayBorder} p-0 text-center w-7" style="vertical-align:middle;height:28px;">
-              <div class="day-box ${cellClass}" onclick="cycleDayStatus(${sIdx}, ${tIdx}, '${d.key}', '${d.dayNum}')" title="Dia ${d.dayNum} (${d.weekday}): clique para alternar"></div>
+            <td class="border ${todayBorder} p-0 text-center min-w-[36px] w-9" style="vertical-align:middle;height:28px;">
+              <div class="day-box ${cellClass}" onclick="cycleDayStatus(${sIdx}, ${tIdx}, '${d.key}', '${d.dayNum}', '${d.formattedDate}')" title="${d.formattedDate} (${d.weekday}): clique para alternar (Amarela = Planejada / Verde = Executada)"></div>
             </td>
           `;
         }).join('');
@@ -23806,32 +23665,47 @@
       let greenCount = 0;
       let yellowCount = 0;
 
-      Object.keys(days).forEach(k => {
-        if (days[k] === 'green') greenCount++;
-        else if (days[k] === 'yellow') yellowCount++;
+      const daysList = projectConfig.days || [];
+      daysList.forEach(d => {
+        const st = days[d.key] || days[d.legacyKey];
+        if (st === 'green') greenCount++;
+        else if (st === 'yellow') yellowCount++;
       });
 
-      const totalActiveDays = greenCount + yellowCount;
+      if (greenCount === 0 && yellowCount === 0) {
+        Object.keys(days).forEach(k => {
+          if (k.startsWith('d_')) {
+            if (days[k] === 'green') greenCount++;
+            else if (days[k] === 'yellow') yellowCount++;
+          }
+        });
+        if (greenCount === 0 && yellowCount === 0) {
+          Object.keys(days).forEach(k => {
+            if (days[k] === 'green') greenCount++;
+            else if (days[k] === 'yellow') yellowCount++;
+          });
+        }
+      }
 
-      // Se não há dias agendados, mantém o valor original ou 0
+      const totalActiveDays = greenCount + yellowCount;
       if (totalActiveDays === 0) return Number(task.progress) || 0;
 
-      // Se nenhuma bolinha foi concluída (todas amarelas = planejadas), o progresso é 0%!
+      // Se todas forem amarelas (planejadas), progresso é 0%
       if (greenCount === 0) return 0;
 
-      // Só vai ser concluída quando REALMENTE fechar TUDO de verde!
+      // SÓ É CONCLUÍDA (100%) QUANDO REALMENTE FECHAR TUDO DE VERDE!
       if (greenCount === totalActiveDays) return 100;
 
-      // Calcula a porcentagem proporcional exata de dias executados (verdes) sobre o total
+      // Porcentagem proporcional exata de bolinhas verdes
       const calculatedPct = Math.round((greenCount / totalActiveDays) * 100);
       return Math.min(99, Math.max(1, calculatedPct));
     }
 
-    function cycleDayStatus(secIdx, taskIdx, dayKey, dayNum) {
+    function cycleDayStatus(secIdx, taskIdx, dayKey, dayNum, formattedDate) {
       const task = projectData[secIdx].tasks[taskIdx];
       if (!task.days) task.days = {};
 
-      const current = task.days[dayKey] || 'empty';
+      const current = task.days[dayKey] || task.days['d' + dayNum] || 'empty';
       let next = 'yellow';
 
       if (current === 'yellow') {
@@ -23839,7 +23713,6 @@
         next = 'green';
       } else if (current === 'green') {
         // Clicou na bolinha verde (executada): volta para PLANEJADA (amarela)!
-        // Não conclui a etapa nem apaga o dia, apenas volta a ser pendente.
         next = 'yellow';
       } else {
         // Célula vazia: adiciona dia planejado (amarelo)
@@ -23847,8 +23720,8 @@
       }
 
       task.days[dayKey] = next;
+      task.days['d' + dayNum] = next;
 
-      // Recalcula o progresso de acordo com as bolinhas feitas
       if (autoCalcProgress) {
         task.progress = recalculateTaskProgressFromDays(task);
       }
@@ -23857,202 +23730,6 @@
       renderSheetBody();
       recordSave();
       renderDashboard();
-      updateKPIs();
-    }
-
-    function cycleTaskStatusQuick(secIdx, taskIdx) {
-      const task = projectData[secIdx].tasks[taskIdx];
-      const p = Number(task.progress) || 0;
-
-      if (!task.days) task.days = {};
-      const dayKeys = Object.keys(task.days);
-
-      if (p === 100) {
-        // Estava 100%, volta para 0% (todas as bolinhas voltam a ficar amarelas)
-        task.progress = 0;
-        dayKeys.forEach(k => { task.days[k] = 'yellow'; });
-      } else if (p > 0) {
-        // Estava em andamento, conclui tudo (todas as bolinhas ficam verdes)
-        task.progress = 100;
-        dayKeys.forEach(k => { task.days[k] = 'green'; });
-      } else {
-        // Estava 0%, marca metade (50%)
-        task.progress = 50;
-        const half = Math.ceil(dayKeys.length / 2);
-        dayKeys.forEach((k, idx) => {
-          task.days[k] = (idx < half) ? 'green' : 'yellow';
-        });
-      }
-
-      saveData();
-      renderSheetBody();
-      recordSave();
-      renderDashboard();
-      updateKPIs();
-    }
-
-    function openSelectOwnerModal(secIdx, taskIdx) {
-      const task = projectData[secIdx].tasks[taskIdx];
-      document.getElementById('select-owner-sec-idx').value = secIdx;
-      document.getElementById('select-owner-task-idx').value = taskIdx;
-      document.getElementById('select-owner-task-title').innerText = `Tarefa: ${task.title}`;
-      document.getElementById('quick-add-owner-input').value = '';
-
-      const currentList = (task.owner || '')
-        .split('/')
-        .map(s => s.trim().toLowerCase())
-        .filter(Boolean);
-
-      const container = document.getElementById('owners-checkbox-container');
-      if (projectOwners.length === 0) {
-        container.innerHTML = `<div class="p-3 text-center opacity-60 text-xs">Nenhum integrante cadastrado ainda. Use o campo acima para inserir!</div>`;
-      } else {
-        container.innerHTML = projectOwners.map(o => {
-          const oName = getOwnerName(o);
-          const oCargo = getOwnerCargo(o);
-          const cargoInfo = getCargoInfo(oCargo);
-          const isChecked = currentList.includes(oName.toLowerCase());
-          return `
-            <label class="flex items-center justify-between p-2 rounded-lg hover:bg-indigo-500/10 cursor-pointer transition border border-transparent hover:border-indigo-500/20">
-              <div class="flex items-center gap-2.5">
-                <input type="checkbox" value="${escapeHtml(oName)}" ${isChecked ? 'checked' : ''} class="owner-checkbox accent-indigo-600 rounded w-4 h-4">
-                <span class="text-xs font-bold">${escapeHtml(oName)}</span>
-              </div>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${cargoInfo.color}">${cargoInfo.icon} ${oCargo}</span>
-            </label>
-          `;
-        }).join('');
-      }
-
-      document.getElementById('select-owner-modal').classList.remove('hidden');
-    }
-
-    function closeSelectOwnerModal() {
-      document.getElementById('select-owner-modal').classList.add('hidden');
-    }
-
-    function quickAddOwnerFromTask() {
-      const input = document.getElementById('quick-add-owner-input');
-      const name = input.value.trim();
-      if (!name) return;
-
-      if (!projectOwners.some(o => getOwnerName(o).toLowerCase() === name.toLowerCase())) {
-        projectOwners.push({ name, cargo: 'Pedreiro' });
-        projectOwners.sort((a, b) => getOwnerName(a).localeCompare(getOwnerName(b)));
-        saveOwners();
-      }
-
-      const checkedBoxes = Array.from(document.querySelectorAll('.owner-checkbox:checked')).map(cb => cb.value);
-      checkedBoxes.push(name);
-
-      const container = document.getElementById('owners-checkbox-container');
-      container.innerHTML = projectOwners.map(o => {
-        const oName = getOwnerName(o);
-        const oCargo = getOwnerCargo(o);
-        const cargoInfo = getCargoInfo(oCargo);
-        const isChecked = checkedBoxes.includes(oName);
-        return `
-          <label class="flex items-center justify-between p-2 rounded-lg hover:bg-indigo-500/10 cursor-pointer transition border border-transparent hover:border-indigo-500/20">
-            <div class="flex items-center gap-2.5">
-              <input type="checkbox" value="${escapeHtml(oName)}" ${isChecked ? 'checked' : ''} class="owner-checkbox accent-indigo-600 rounded w-4 h-4">
-              <span class="text-xs font-bold">${escapeHtml(oName)}</span>
-            </div>
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${cargoInfo.color}">${cargoInfo.icon} ${oCargo}</span>
-          </label>
-        `;
-      }).join('');
-
-      input.value = '';
-    }
-
-    function clearTaskOwners() {
-      document.querySelectorAll('.owner-checkbox').forEach(cb => cb.checked = false);
-    }
-
-    function saveSelectedOwnersToTask() {
-      const secIdx = parseInt(document.getElementById('select-owner-sec-idx').value, 10);
-      const taskIdx = parseInt(document.getElementById('select-owner-task-idx').value, 10);
-      const task = projectData[secIdx].tasks[taskIdx];
-
-      const selected = Array.from(document.querySelectorAll('.owner-checkbox:checked')).map(cb => cb.value);
-      const newOwnerStr = selected.join(' / ');
-
-      if (task.owner !== newOwnerStr) {
-        task.owner = newOwnerStr;
-        renderSheetBody();
-        recordSave();
-        renderDashboard();
-      }
-
-      closeSelectOwnerModal();
-    }
-
-    function openNewTaskModal(defaultSecIdx = 0) {
-      const select = document.getElementById('modal-select-frente');
-      select.innerHTML = projectData.map((s, idx) => `
-        <option value="${idx}" ${idx === defaultSecIdx ? 'selected' : ''}>
-          ${s.priority}. ${escapeHtml(s.title)}
-        </option>
-      `).join('');
-
-      const ownerSelect = document.getElementById('modal-select-owner');
-      ownerSelect.innerHTML = `<option value="">-- Selecione ou deixe vazio --</option>` + projectOwners.map(o => {
-        const oName = getOwnerName(o);
-        const oCargo = getOwnerCargo(o);
-        const cInfo = getCargoInfo(oCargo);
-        return `<option value="${escapeHtml(oName)}">${cInfo.icon} ${escapeHtml(oName)} (${escapeHtml(oCargo)})</option>`;
-      }).join('');
-
-      document.getElementById('modal-input-title').value = '';
-      document.getElementById('modal-input-start').value = '18/09/26';
-      document.getElementById('modal-input-end').value = '22/09/26';
-      document.getElementById('modal-input-prog').value = '0';
-      document.getElementById('modal-input-prog-label').innerText = '0%';
-
-      document.getElementById('new-task-modal').classList.remove('hidden');
-      setTimeout(() => document.getElementById('modal-input-title').focus(), 100);
-    }
-
-    function closeNewTaskModal() {
-      document.getElementById('new-task-modal').classList.add('hidden');
-    }
-
-    function handleNewTaskSubmit(e) {
-      e.preventDefault();
-      const secIdx = parseInt(document.getElementById('modal-select-frente').value, 10) || 0;
-      const title = document.getElementById('modal-input-title').value.trim();
-      const owner = document.getElementById('modal-select-owner').value;
-      const start = document.getElementById('modal-input-start').value.trim();
-      const end = document.getElementById('modal-input-end').value.trim();
-      const progress = parseInt(document.getElementById('modal-input-prog').value, 10) || 0;
-
-      if (!title) return;
-
-      const newTask = {
-        id: 'task_' + Date.now(),
-        title,
-        owner,
-        start,
-        end,
-        progress,
-        days: {}
-      };
-
-      // Preenche os quadradinhos amarelos automaticamente com base nas datas de início e fim
-      applyAutoDaysForTask(newTask, calendarYear, calendarMonth);
-
-      projectData[secIdx].tasks.push(newTask);
-      closeNewTaskModal();
-      renderSheetBody();
-      recordSave();
-      renderDashboard();
-      if (cronogramaViewMode === 'executores') {
-        renderMirroredSchedule();
-      }
-    }
-
-    function recordSave() {
-      saveAllData(false);
       updateKPIs();
       if (cronogramaViewMode === 'executores') {
         renderMirroredSchedule();
@@ -26226,8 +25903,8 @@
                     <span class="inline-block px-1.5 py-0.5 rounded text-[9.5px] ${svar.badgeClass}">${svar.text}</span>
                   </td>
 
-                  ${projectConfig.days.map(d => {
-                    const status = (task.days && task.days[d.key]) ? task.days[d.key] : 'empty';
+                  ${(projectConfig.days || []).map(d => {
+                    const status = (task.days && (task.days[d.key] || task.days[d.legacyKey])) ? (task.days[d.key] || task.days[d.legacyKey]) : 'empty';
                     let cellClass = 'status-empty';
                     if (status === 'green') cellClass = 'status-green';
                     else if (status === 'yellow') cellClass = 'status-yellow';
@@ -26235,8 +25912,8 @@
                     const todayBorder = d.isToday ? 'border-sky-400 bg-sky-500/10' : 'table-cell-border';
 
                     return `
-                      <td class="border ${todayBorder} p-0 text-center w-7" style="vertical-align:middle;height:28px;">
-                        <div class="day-box ${cellClass}" onclick="cycleDayStatus(${sIdx}, ${tIdx}, '${d.key}', '${d.dayNum}'); renderMirroredSchedule();" title="Dia ${d.dayNum} (${d.weekday}) de ${escapeHtml(wName)}: clique para alternar"></div>
+                      <td class="border ${todayBorder} p-0 text-center min-w-[36px] w-9" style="vertical-align:middle;height:28px;">
+                        <div class="day-box ${cellClass}" onclick="cycleDayStatus(${sIdx}, ${tIdx}, '${d.key}', '${d.dayNum}', '${d.formattedDate}'); renderMirroredSchedule();" title="${d.formattedDate} (${d.weekday}) de ${escapeHtml(wName)}: clique para alternar"></div>
                       </td>
                     `;
                   }).join('')}
